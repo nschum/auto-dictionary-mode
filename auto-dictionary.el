@@ -1,10 +1,10 @@
 ;;; auto-dictionary.el --- automatic dictionary switcher for flyspell
 ;;-*-coding: utf-8;-*-
 ;;
-;; Copyright (C) 2006-2007 Nikolaj Schumacher
+;; Copyright (C) 2006-2008 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 1.0
+;; Version: 1.0.1
 ;; Keywords: wp
 ;; URL: http://nschum.de/src/emacs/auto-dictionary/
 ;; Compatibility: GNU Emacs 21.x, GNU Emacs 22.x
@@ -28,7 +28,7 @@
 ;;
 ;; Add the following to your .emacs file:
 ;; (require 'auto-dictionary)
-;; (add-hook 'flyspell-mode-hook '(lambda () (auto-dictionary-mode 1)))
+;; (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1)))
 ;;
 ;; Then just type.  When you stop for a few moments `auto-dictionary-mode' will
 ;; start evaluating the content.
@@ -45,11 +45,17 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2007-05-28 (1.0.1)
+;;    Speed improvements.
+;;    Defined functions before variables that use them.
+;;    Improved Swedish word list.  (thanks to Joakim Verona)
+;;    Support for Portuguese.  (thanks to Nelson Ferreira)
+;;
 ;; 2007-05-28 (1.0)
 ;;    Added support for `flyspell-prog-mode'.
 ;;    Added `adict-' prefix to functions without.
-;;    Support for Slovenian (thanks to Gregor Gorjanc), Hungarian and Romanian
-;;      (thanks to Maria Muschinski).
+;;    Support for Hungarian and Romanian.  (thanks to Maria Muschinski).
+;;    Support for Slovenian.  (thanks to Gregor Gorjanc)
 ;;    Bug fixes for Emacs 21.  (thanks to Gregor Gorjanc)
 ;;    Added `adict-conditional-' functions.
 ;;
@@ -92,6 +98,19 @@ This is called when `auto-dictionary-mode' changes its mind or
   :group 'auto-dictionary
   :type 'hook)
 
+(defun adict-guess-dictionary-name (names &optional list)
+  "Return the element in NAMES found in `ispell-valid-dictionary-list'."
+  (if list
+       (or (car (member (car names) list))
+           (when (cdr names)
+             (adict-guess-dictionary-name (cdr names))))
+    (or (adict-guess-dictionary-name
+         names
+         (if (fboundp 'ispell-valid-dictionary-list)
+             (ispell-valid-dictionary-list)
+           (cdr (mapcar 'car ispell-dictionary-alist))))
+        (car names))))
+
 (defvar adict-dictionary-list
   ;; we can't be sure of the actual dictionary names
   (mapcar 'adict-guess-dictionary-name
@@ -103,7 +122,8 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("sv" "svenska" "swedish")
             ("sl" "slovenian" "slovene")
             ("hu" "magyar" "hungarian")
-            ("ro" "românâ" "româneşte" "romanian")))
+            ("ro" "românâ" "româneşte" "romanian")
+            ("pt" "português" "portuguese")))
   "The dictionaries `auto-dictionary-mode' uses.
 Change them if you'd like a different region for your
 language (e.g. \"en_US\" or \"american\").  Setting it to nil prevents
@@ -203,24 +223,24 @@ when an input event occurs."
                 (substring (or ispell-local-dictionary ispell-dictionary "??")
                            0 2))))
 
-(defun foreach-short-word (beg end maxlength function &optional idle-only)
+(defun adict-foreach-word (beg end maxlength function &optional idle-only)
   "Execute FUNCTION for every word between BEG and END of length <= MAXLENGTH.
 If IDLE-ONLY is set, abort when an input event occurs."
   (save-excursion
-    (let ((sofar beg))
-      (goto-char beg)
-      (while (and (< sofar end)
-                  (not (and idle-only (input-pending-p))))
-        (forward-word 1)
-        (setq sofar (point))
-        (backward-word 1)
+    (goto-char beg)
+    (while (and (< (point) end)
+                (not (and idle-only (input-pending-p))))
+      (skip-syntax-forward "^w")
+      (if (or (and flyspell-generic-check-word-p
+                   (null (funcall flyspell-generic-check-word-p)))
+              (memq nil
+                    (mapcar (lambda (ov)
+                              (not (overlay-get ov 'adict-conditional-list)))
+                            (overlays-at (point)))))
+          (skip-syntax-forward "w")
         (setq beg (point))
-        (goto-char sofar)
-        (when (<= (- sofar beg) maxlength)
-          (unless (and flyspell-generic-check-word-p
-                       (null (funcall flyspell-generic-check-word-predicate)))
-            (funcall function (buffer-substring-no-properties beg sofar)))))
-      )))
+        (when (<= (skip-syntax-forward "w") maxlength)
+          (funcall function (buffer-substring-no-properties beg (point))))))))
 
 (defun adict-find-max (vector)
   (let* ((index (- (length vector) 1))
@@ -235,21 +255,8 @@ If IDLE-ONLY is set, abort when an input event occurs."
         (decf index)))
     pos))
 
-(defun adict-guess-dictionary-name (names &optional list)
-  "Return the element in NAMES found in `ispell-valid-dictionary-list'."
-  (if list
-       (or (car (member (car names) list))
-           (when (cdr names)
-             (adict-guess-dictionary-name (cdr names))))
-    (or (adict-guess-dictionary-name
-         names
-         (if (fboundp 'ispell-valid-dictionary-list)
-             (ispell-valid-dictionary-list)
-           (cdr (mapcar 'car ispell-dictionary-alist))))
-        (car names))))
-
 (defconst adict-language-list
-  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro")
+  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt")
   "The languages, in order, which `adict-hash' contains.")
 
 (defmacro adict-add-word (hash lang &rest words)
@@ -259,18 +266,20 @@ If IDLE-ONLY is set, abort when an input event occurs."
      (puthash word ,lang ,hash)))
 
 (defvar adict-hash
+  ;; Good words are frequent and unique to a language...
   ;; http://www.verbix.com/languages/
   (let ((hash (make-hash-table :test 'equal)))
     ;; all words should be downcase
     (adict-add-word hash 1 "and" "are" "at" "been" "but" "by" "dear" "for"
-       "get" "have" "he" "hello" "it" "me" "my" "not" "of" "put"
+       "get" "have" "he" "hello" "it" "me" "my" "not" "on" "of" "off" "put"
        "regarding" "set" "she" "some" "that" "than" "the" "there" "to" "us"
-       "we" "while" "with" "you" "your" "yours")
-    (adict-add-word hash 2 "ab" "aber" "als" "andere" "anderem" "anderen"
+       "was" "we" "while" "with" "yes" "you" "your" "yours")
+    (adict-add-word hash 2 "eins" "zwei" "drei" "vier" "fünf" "sechs" "sieben"
+       "acht" "neun" "zehn" "ab" "aber" "als" "andere" "anderem" "anderen"
        "anderes" "anders" "auf" "aus" "bei" "beide" "beidem" "beiden" "beides"
        "beim" "bereits" "bevor" "bis" "bisher" "bzw" "dabei" "dadurch"
        "dagegen" "daher" "damit" "danach" "dann" "daran" "darauf" "daraus"
-       "darin" "darunter" "das" "dass" "davon" "dazu" "dem" "demselben" "den"
+       "darin" "darunter" "das" "dass" "davon" "dazu" "dem" "demselben"
        "denen" "denselben" "der" "derart" "deren" "derer" "derselben"
        "desselben" "dessen" "diese" "diesem" "diesen" "dieser" "dieses" "dir"
        "doch" "dort" "durch" "eben" "ebenfalls" "ein" "eine" "einem" "einen"
@@ -305,19 +314,26 @@ If IDLE-ONLY is set, abort when an input event occurs."
        "dos" "día" "días" "ejemplo" "ella" "ellos" "entonces" "entre"
        "era" "eres" "esa" "ese" "eso" "esta" "estaba" "estado" "estas"
        "esto" "estos" "está" "están" "forma" "fue" "general" "gente" "gobierno"
-       "gran" "ha" "había" "hace" "hacemos" "hacen" "hacer" "haces" "hacia"
+       "gran" "había" "hace" "hacemos" "hacen" "hacer" "haces" "hacia"
        "hacéis" "hago" "han" "hasta" "hay" "hecho" "hombre" "hoy" "las" "lo"
-       "los" "luego" "lugar" "mayor" "mejor" "menos" "mientras" "mismo"
+       "los" "luego" "mayor" "mejor" "menos" "mientras" "mismo"
        "momento" "mucho" "mujer" "mundo" "muy" "más" "mí" "nada" "ni" "no" "nos"
-       "nosotros" "nunca" "otra" "otras" "otro" "otros" "para" "parece"
-       "parte" "país" "pero" "personas" "poco" "poder" "política" "por" "porque"
-       "primera" "puede" "pueden" "qué" "sea" "según" "ser" "si" "sido"
-       "siempre" "sino" "sobre" "sois" "somos" "son" "soy" "su" "sus" "sí"
+       "nosotros" "otra" "otras" "otro" "otros" "parece"
+       "parte" "país" "pero" "personas" "poco" "poder" "política" "porque"
+       "primera" "puede" "pueden" "qué" "sea" "según" "ser" "si"
+       "siempre" "sino" "sois" "somos" "son" "soy" "su" "sus" "sí"
        "sólo" "tal" "también" "tan" "tanto" "tenemos" "tener" "tengo"
        "tenéis" "tenía" "tiempo" "tiene" "tienen" "tienes" "time" "toda" "todas"
        "todo" "todos" "trabajo" "tres" "una" "uno" "unos" "usted" "vamos" "ve"
        "veces" "veis" "ven" "veo" "ver" "ves" "vida" "y" "ya" "yo" "él")
-    (adict-add-word hash 5 "och" "att" "en" "som" "det" "är" "av" "på")
+    (adict-add-word hash 5 "och" "att" "en" "som" "det" "är" "av" "på"
+       "ett" "två" "tre" "fyra" "fem" "sex" "sju" "åtta" "nio" "tio"
+       "du" "jag" "inte" "nej" "vad" "defvar" "hej" "har" "kan"
+       "om" "för" "till" "barn" "eller" "finns" "många" "när"
+       "från" "ska" "klotter" "tycker" "sig" "vara" "vill" "konst" "så" "få"
+       "mycket" "andra" "måste" "göra" "skulle" "deras" "sverige" "här" "sina"
+       "bara" "också" "kommer" "hur" "alla" "gör" "sedan" "någon"
+       "efter")
     (adict-add-word hash 6
        ;; slovenian (based on http://bos.zrc-sazu.si/a_top2000_si.html)
        "ali" "ampak" "bi" "bil" "biti" "bo" "bodo" "bolj" "bom" "brez" "čas"
@@ -326,8 +342,8 @@ If IDLE-ONLY is set, abort when an input event occurs."
        "ena" "enkrat" "ga" "glede" "gotovo" "gre" "hitro" "hvala" "ima"
        "iz" "jasno" "jaz" "jih" "jim" "kaj" "kajti" "kako" "kar"
        "kateri" "kdaj" "kdo" "ker" "kje" "kljub" "kmalu" "ko" "koliko"
-       "konec" "kot" "lahko" "lep" "let" "malo" "manj" "med" "močno"
-       "mogoče" "mu" "na" "nad" "naj" "največ" "nam" "namreč" "naprej"
+       "konec" "kot" "lahko" "lep" "let" "malo" "manj" "močno"
+       "mogoče" "mu" "nad" "naj" "največ" "nam" "namreč" "naprej"
        "nas" "naš" "nazaj" "nekaj" "nič" "nihče" "nikoli" "niso"
        "niti" "nov" "očitno" "od" "okoli" "oziroma" "pa" "pač" "pet"
        "po" "počasi" "pod" "pol" "poleg" "potem" "pozdrav" "prav" "pred"
@@ -335,7 +351,7 @@ If IDLE-ONLY is set, abort when an input event occurs."
        "res" "saj" "sam" "še" "sedaj" "šele" "sem" "seveda" "sicer"
        "skoraj" "skupaj" "smo" "so" "spet" "sploh" "sta" "ste" "število"
        "štiri" "sto" "stran" "svoj" "ta" "tako" "takoj" "takrat" "tam"
-       "tega" "teh" "tem" "ter" "težko" "tisoč" "tisto"
+       "tega" "teh" "tem" "težko" "tisoč" "tisto"
        "tokrat" "toliko" "torej" "treba" "tudi" "tukaj" "več" "vedno"
        "veliko" "velja" "vendar" "vsaj" "vsak" "vse" "vsi" "za" "zadnji"
        "zakaj" "zakon" "zaradi" "zato" "zdaj" "že" "zelo" "zgolj")
@@ -343,14 +359,25 @@ If IDLE-ONLY is set, abort when an input event occurs."
        "nem" "igen" "és" "így" "úgy" "s" "jól" "van" "nincs" "nekem" "neki"
        "amely" "ki" "fel" "ezek" "azok" "ezen" "azon" "közé"
        "meg" "még" "azaz" "aki" "volt" "egyéb" "vagy" "ennek" "annak" "talán")
-    (adict-add-word hash 8 "nu" "eu" "ea" "noi" "voi" "ei" "ele"
+    (adict-add-word hash 8 "nu" "ea" "noi" "voi" "ei"
        "să" "în" "peste" "şi" "la" "unless" "despre" "din" "cele" "dintre"
        "avem" "vă" "oricare" "se" "acest" "fi" "pe" "care" "mai" "dacă" "cum"
        "te" "numai" "sunt""fost" "când" "aţi" "am" "pentru" "acum" "acesta"
        "ca" "sub" "ani")
+    (adict-add-word hash 9
+      ;; from http://home.unilang.org/main/wiki2/index.php/Portuguese_wordlist
+      "e" "são" "em" "têm" "mas" "querido" "querida" "caro" "cara" "para"
+      "obter" "pegar" "oi" "aquilo" "coisa" "meu" "não" "pôr"
+      "meter" "colocar" "acerca" "algum" "alguns" "alguma" "algumas" "lá" "além"
+      "nós" "eles" "ela" "elas" "teu" "enquanto" "com" "contigo" "você" "vosso"
+      "sim" "olá" "tchau" "adeus" "bem-vindo" "obrigado" "obrigada" "já"
+      "também" "sempre" "bonito" "certamente" "claramente" "cedo"
+      "longe" "tarde" "provavelmente" "alto" "talvez" "muito" "perto"
+      "agora" "apenas" "possivelmente" "raramente" "ainda" "acolá" "hoje"
+      "amanhã" "improvável" "bem" "errado" "ontem")
     ;; don't use because they're ambiguous:
     ;; a i des du bien en es les que se tu un va el le te mi be is az da este
-    ;; or ce le o de
+    ;; or ce le o de den ha med na sido para soble eu ele nunca ter lugar
     ;; adding another language? email me to make it available to everyone!
     hash))
 
@@ -362,9 +389,9 @@ If IDLE-ONLY is set, abort when an input event occurs."
   "Evaluate all words in the current buffer to find out the text's language.
 If IDLE-ONLY is set, abort when an input event occurs."
   (let ((counts (make-vector (length adict-language-list) 0)))
-    (foreach-short-word
+    (adict-foreach-word
      (point-min) (point-max) 8
-     '(lambda (word)
+     (lambda (word)
         ;; increase language count of WORD by one
         (callf incf (elt counts (adict-evaluate-word word))))
      idle-only)
