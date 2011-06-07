@@ -158,9 +158,7 @@ specified in `adict-language-list'")
                    (run-with-idle-timer adict-idle-time t
                                         'adict-guess-dictionary-maybe
                                         (current-buffer))))))
-     (when adict-timer
-       (cancel-timer adict-timer))
-     (kill-local-variable 'adict-timer)
+     (adict--cancel-timer)
      (kill-local-variable 'adict-lighter)
      (kill-local-variable 'adict-last-check)))
 
@@ -184,6 +182,11 @@ when an input event occurs."
           (ignore-errors (adict-change-dictionary lang))))
       lang)))
 
+(defun adict--cancel-timer ()
+  (when adict-timer
+    (cancel-timer adict-timer))
+  (kill-local-variable 'adict-timer))
+
 (defsubst adict-valid-dictionary-p (lang)
   "Test if LANG is a legal dictionary."
   (member lang
@@ -206,8 +209,7 @@ when an input event occurs."
   (adict-update-lighter)
   (run-hook-with-args 'adict-change-dictionary-hook)
   (when (and adict-timer adict-stop-updating-on-dictionary-change)
-    (cancel-timer adict-timer)
-    (kill-local-variable 'adict-timer)))
+    (adict--cancel-timer)))
 
 (defun adict-guess-dictionary-maybe (buffer)
   "Call `adict-guess-dictionary' or not based on `adict-change-threshold'."
