@@ -215,11 +215,10 @@ when an input event occurs."
 
 (defun adict-guess-dictionary-maybe (buffer)
   "Call `adict-guess-dictionary' or not based on `adict-change-threshold'."
-  (with-current-buffer (or buffer (current-buffer))
-    (when (and (eq (current-buffer) buffer)
-               (> (- (buffer-modified-tick) adict-last-check)
-                  (* adict-change-threshold (buffer-size))))
-      (adict-guess-dictionary t))))
+  (when (and (eq (current-buffer) buffer)
+             (> (- (buffer-modified-tick) adict-last-check)
+                (* adict-change-threshold (buffer-size))))
+    (adict-guess-dictionary t)))
 
 (defun adict-update-lighter ()
   (setq adict-lighter
