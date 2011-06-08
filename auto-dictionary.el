@@ -157,8 +157,10 @@ specified in `adict-language-list'")
                  (when adict-idle-time
                    (run-with-idle-timer adict-idle-time t
                                         'adict-guess-dictionary-maybe
-                                        (current-buffer))))))
+                                        (current-buffer)))))
+         (add-hook 'kill-buffer-hook 'adict--cancel-timer nil t))
      (adict--cancel-timer)
+     (remove-hook 'kill-buffer-hook 'adict--cancel-timer t)
      (kill-local-variable 'adict-lighter)
      (kill-local-variable 'adict-last-check)))
 
