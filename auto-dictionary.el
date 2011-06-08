@@ -7,7 +7,7 @@
 ;; Version: 1.0.1
 ;; Keywords: wp
 ;; URL: http://nschum.de/src/emacs/auto-dictionary/
-;; Compatibility: GNU Emacs 21.x, GNU Emacs 22.x
+;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;
