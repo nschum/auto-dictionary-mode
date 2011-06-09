@@ -490,8 +490,6 @@ If IDLE-ONLY is set, abort when an input event occurs."
   (let ((lang (elt adict-language-list
                    (adict-find-max (adict-evaluate-buffer idle-only)))))
     (unless (and idle-only (input-pending-p))
-      (when (interactive-p)
-        (message "Buffer language: %s" lang))
       lang)))
 
 (provide 'auto-dictionary)
