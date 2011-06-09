@@ -45,6 +45,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    The initial guess is now triggered without any buffer changes.
+;;
 ;; 2007-05-28 (1.0.1)
 ;;    Speed improvements.
 ;;    Defined functions before variables that use them.
@@ -136,7 +138,7 @@ specified in `adict-language-list'")
 (defvar adict-timer nil)
 (make-variable-buffer-local 'adict-timer)
 
-(defvar adict-last-check 0)
+(defvar adict-last-check :never)
 (make-variable-buffer-local 'adict-last-check)
 
 (defvar adict-stop-updating-on-dictionary-change t
@@ -150,7 +152,6 @@ specified in `adict-language-list'")
    nil adict-lighter nil
    (if auto-dictionary-mode
        (progn
-         (setq adict-last-check 0)
          (adict-update-lighter)
          (unless adict-timer
            (setq adict-timer
@@ -221,7 +222,9 @@ when an input event occurs."
 
 (defun adict--next-guess-tick ()
   "The `buffer-modified-tick' until which the buffer language is not guessed."
-  (+ (* adict-change-threshold (buffer-size)) adict-last-check))
+  (if (eq adict-last-check :never)
+      0
+    (+ (* adict-change-threshold (buffer-size)) adict-last-check)))
 
 (defun adict-update-lighter ()
   (setq adict-lighter
