@@ -213,12 +213,15 @@ when an input event occurs."
   (when (and adict-timer adict-stop-updating-on-dictionary-change)
     (adict--cancel-timer)))
 
-(defun adict-guess-dictionary-maybe (buffer)
+(defun adict-guess-dictionary-maybe (timer-buffer)
   "Call `adict-guess-dictionary' or not based on `adict-change-threshold'."
-  (when (and (eq (current-buffer) buffer)
-             (> (- (buffer-modified-tick) adict-last-check)
-                (* adict-change-threshold (buffer-size))))
+  (when (and (eq (current-buffer) timer-buffer)
+             (> (buffer-modified-tick) (adict--next-guess-tick)))
     (adict-guess-dictionary t)))
+
+(defun adict--next-guess-tick ()
+  "The `buffer-modified-tick' until which the buffer language is not guessed."
+  (+ (* adict-change-threshold (buffer-size)) adict-last-check))
 
 (defun adict-update-lighter ()
   (setq adict-lighter
