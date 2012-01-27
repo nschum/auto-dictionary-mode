@@ -494,4 +494,9 @@ If IDLE-ONLY is set, abort when an input event occurs."
 
 (provide 'auto-dictionary)
 
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; fill-column: 80
+;; End:
+
 ;;; auto-dictionary.el ends here
