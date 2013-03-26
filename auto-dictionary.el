@@ -4,7 +4,7 @@
 ;; Copyright (C) 2006-2008 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 1.0.1
+;; Version: 1.0.2
 ;; Keywords: wp
 ;; URL: http://nschum.de/src/emacs/auto-dictionary/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
@@ -45,6 +45,7 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2013-03-26 (1.0.2)
 ;;    The initial guess is now triggered without any buffer changes.
 ;;
 ;; 2007-05-28 (1.0.1)
