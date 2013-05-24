@@ -1,7 +1,7 @@
 ;;; auto-dictionary.el --- automatic dictionary switcher for flyspell
 ;;-*-coding: utf-8;-*-
 ;;
-;; Copyright (C) 2006-2008 Nikolaj Schumacher
+;; Copyright (C) 2006-2008, 2011, 2013 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
 ;; Version: 1.0.2
