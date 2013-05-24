@@ -177,7 +177,7 @@ Calls `ispell-change-dictionary' and runs `adict-change-dictionary-hook'.  If
 BUFFER is nil, the current buffer is used.  If IDLE-ONLY is set, abort
 when an input event occurs."
   (interactive)
-  (let ((lang (nth (adict-find-max (adict-evaluate-buffer idle-only))
+  (let ((lang (nth (adict--evaluate-buffer-find-max-index idle-only)
                    adict-dictionary-list)))
     (unless (and idle-only (input-pending-p))
       (when lang
@@ -254,19 +254,6 @@ If IDLE-ONLY is set, abort when an input event occurs."
         (setq beg (point))
         (when (<= (skip-syntax-forward "w") maxlength)
           (funcall function (buffer-substring-no-properties beg (point))))))))
-
-(defun adict-find-max (vector)
-  (let* ((index (- (length vector) 1))
-         (pos index)
-         (max (elt vector pos)))
-    (decf index)
-    (while (> index 0)
-      (let ((val (elt vector index)))
-        (when (>= val max)
-          (setq max val)
-          (setq pos index))
-        (decf index)))
-    pos))
 
 (defconst adict-language-list
   '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt")
@@ -423,6 +410,20 @@ If IDLE-ONLY is set, abort when an input event occurs."
      idle-only)
     counts))
 
+(defun adict--evaluate-buffer-find-max-index (idle-only)
+  (let* ((vector (adict-evaluate-buffer idle-only))
+         (index (- (length vector) 1))
+         (pos index)
+         (max (elt vector pos)))
+    (decf index)
+    (while (> index 0)
+      (let ((val (elt vector index)))
+        (when (>= val max)
+          (setq max val)
+          (setq pos index))
+        (decf index)))
+    pos))
+
 ;;; Conditional Insertion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar adict-conditional-overlay-list nil)
@@ -505,7 +506,7 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
   "Guess the language of the current-buffer using the data in ``adict-hash''.
 If IDLE-ONLY is set, abort when an input event occurs."
   (let ((lang (elt adict-language-list
-                   (adict-find-max (adict-evaluate-buffer idle-only)))))
+                   (adict--evaluate-buffer-find-max-index idle-only))))
     (unless (and idle-only (input-pending-p))
       lang)))
 
