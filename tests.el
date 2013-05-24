@@ -25,3 +25,11 @@
                                     (setq idle-only-set idle-only) [0]))
         (adict--evaluate-buffer-find-max-index nil))
       idle-only-set))))
+
+(ert-deftest adict--evaluate-buffer-find-dictionary-should-find-dictionary ()
+  (should
+   (equal "en_US"
+          (let ((adict-dictionary-list '(nil "de_DE" "en_US" "fr")))
+            (flet ((adict--evaluate-buffer-find-max-index (idle-only) 2))
+              (adict--evaluate-buffer-find-dictionary nil))))))
+

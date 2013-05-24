@@ -177,8 +177,7 @@ Calls `ispell-change-dictionary' and runs `adict-change-dictionary-hook'.  If
 BUFFER is nil, the current buffer is used.  If IDLE-ONLY is set, abort
 when an input event occurs."
   (interactive)
-  (let ((lang (nth (adict--evaluate-buffer-find-max-index idle-only)
-                   adict-dictionary-list)))
+  (let ((lang (adict--evaluate-buffer-find-dictionary idle-only)))
     (unless (and idle-only (input-pending-p))
       (when lang
         (setq adict-last-check (buffer-modified-tick))
@@ -423,6 +422,10 @@ If IDLE-ONLY is set, abort when an input event occurs."
           (setq pos index))
         (decf index)))
     pos))
+
+(defun adict--evaluate-buffer-find-dictionary (idle-only)
+  (nth (adict--evaluate-buffer-find-max-index idle-only)
+       adict-dictionary-list))
 
 ;;; Conditional Insertion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
