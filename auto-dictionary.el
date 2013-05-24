@@ -427,6 +427,10 @@ If IDLE-ONLY is set, abort when an input event occurs."
   (nth (adict--evaluate-buffer-find-max-index idle-only)
        adict-dictionary-list))
 
+(defun adict--evaluate-buffer-find-lang (idle-only)
+  (nth (adict--evaluate-buffer-find-max-index idle-only)
+       adict-language-list))
+
 ;;; Conditional Insertion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar adict-conditional-overlay-list nil)
@@ -508,8 +512,7 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
 (defun adict-guess-buffer-language (&optional idle-only)
   "Guess the language of the current-buffer using the data in ``adict-hash''.
 If IDLE-ONLY is set, abort when an input event occurs."
-  (let ((lang (elt adict-language-list
-                   (adict--evaluate-buffer-find-max-index idle-only))))
+  (let ((lang (adict--evaluate-buffer-find-lang idle-only)))
     (unless (and idle-only (input-pending-p))
       lang)))
 

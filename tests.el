@@ -33,3 +33,9 @@
             (flet ((adict--evaluate-buffer-find-max-index (idle-only) 2))
               (adict--evaluate-buffer-find-dictionary nil))))))
 
+(ert-deftest adict--evaluate-buffer-find-lang-should-find-lang ()
+  (should
+   (equal "en"
+          (let ((adict-language-list '(nil "de" "en" "fr")))
+            (flet ((adict--evaluate-buffer-find-max-index (idle-only) 2))
+              (adict--evaluate-buffer-find-lang nil))))))
