@@ -2,6 +2,23 @@
 (require 'auto-dictionary)
 (eval-when-compile (require 'cl))
 
+(ert-deftest adict--guess-dictionary-name ()
+  (should (equal "deutsch"
+                 (adict-guess-dictionary-name '("de" "deutsch" "german")
+                                              '("francais" "deutsch" "english"))))
+  (should (equal nil
+                 (adict-guess-dictionary-name '("de" "deutsch" "german")
+                                              '("francais" "english"))))
+  (should (equal "english"
+                 (flet ((ispell-valid-dictionary-list
+                         ()
+                         '("francais" "deutsch" "english")))
+                   (adict-guess-dictionary-name '("en" "english")))))
+
+  (should (equal nil
+                 (flet ((ispell-valid-dictionary-list () '("english" "deutsch")))
+                   (adict-guess-dictionary-name '("fr" "francais"))))))
+
 (ert-deftest adict--evaluate-buffer-find-max-index-should-find-max-index ()
   (should (equal 1 (flet ((adict-evaluate-buffer (idle-only) [20 10 0]))
                      (adict--evaluate-buffer-find-max-index nil))))
