@@ -45,6 +45,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    `adict-guess-dictionary' no longer changes the dictionary if aborted.
+;;
 ;; 2013-03-26 (1.0.2)
 ;;    The initial guess is now triggered without any buffer changes.
 ;;
@@ -177,14 +179,15 @@ when an input event occurs."
   (interactive)
   (let ((lang (nth (adict-find-max (adict-evaluate-buffer idle-only))
                    adict-dictionary-list)))
-    (when lang
-      (setq adict-last-check (buffer-modified-tick))
-      (unless (or (equal ispell-local-dictionary lang)
-                  (and (null ispell-local-dictionary)
-                       (equal ispell-dictionary lang)))
-        (let (adict-stop-updating-on-dictionary-change)
-          (adict-change-dictionary lang)))
-      lang)))
+    (unless (and idle-only (input-pending-p))
+      (when lang
+        (setq adict-last-check (buffer-modified-tick))
+        (unless (or (equal ispell-local-dictionary lang)
+                    (and (null ispell-local-dictionary)
+                         (equal ispell-dictionary lang)))
+          (let (adict-stop-updating-on-dictionary-change)
+            (adict-change-dictionary lang)))
+        lang))))
 
 (defun adict--cancel-timer ()
   (when adict-timer
