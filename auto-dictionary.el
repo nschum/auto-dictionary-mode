@@ -424,8 +424,13 @@ If IDLE-ONLY is set, abort when an input event occurs."
     pos))
 
 (defun adict--evaluate-buffer-find-dictionary (idle-only)
-  (nth (adict--evaluate-buffer-find-max-index idle-only)
-       adict-dictionary-list))
+  (if (consp (car adict-dictionary-list))
+      ;; current format
+      (cdr (assoc (adict--evaluate-buffer-find-lang idle-only)
+                  adict-dictionary-list))
+    ;; old format (<= 1.0.2)
+    (nth (adict--evaluate-buffer-find-max-index idle-only)
+         adict-dictionary-list)))
 
 (defun adict--evaluate-buffer-find-lang (idle-only)
   (nth (adict--evaluate-buffer-find-max-index idle-only)
