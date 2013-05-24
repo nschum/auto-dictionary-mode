@@ -104,9 +104,9 @@ This is called when `auto-dictionary-mode' changes its mind or
 (defun adict-guess-dictionary-name (names &optional list)
   "Return the element in NAMES found in `ispell-valid-dictionary-list'."
   (if list
-       (or (car (member (car names) list))
-           (when (cdr names)
-             (adict-guess-dictionary-name (cdr names))))
+      (or (car (member (car names) list))
+          (when (cdr names)
+            (adict-guess-dictionary-name (cdr names))))
     (or (adict-guess-dictionary-name
          names
          (if (fboundp 'ispell-valid-dictionary-list)
@@ -150,21 +150,21 @@ specified in `adict-language-list'")
 ;;;###autoload
 (define-minor-mode auto-dictionary-mode
   "A minor mode that automatically sets `ispell-dictionary`."
-   nil adict-lighter nil
-   (if auto-dictionary-mode
-       (progn
-         (adict-update-lighter)
-         (unless adict-timer
-           (setq adict-timer
-                 (when adict-idle-time
-                   (run-with-idle-timer adict-idle-time t
-                                        'adict-guess-dictionary-maybe
-                                        (current-buffer)))))
-         (add-hook 'kill-buffer-hook 'adict--cancel-timer nil t))
-     (adict--cancel-timer)
-     (remove-hook 'kill-buffer-hook 'adict--cancel-timer t)
-     (kill-local-variable 'adict-lighter)
-     (kill-local-variable 'adict-last-check)))
+  nil adict-lighter nil
+  (if auto-dictionary-mode
+      (progn
+        (adict-update-lighter)
+        (unless adict-timer
+          (setq adict-timer
+                (when adict-idle-time
+                  (run-with-idle-timer adict-idle-time t
+                                       'adict-guess-dictionary-maybe
+                                       (current-buffer)))))
+        (add-hook 'kill-buffer-hook 'adict--cancel-timer nil t))
+    (adict--cancel-timer)
+    (remove-hook 'kill-buffer-hook 'adict--cancel-timer t)
+    (kill-local-variable 'adict-lighter)
+    (kill-local-variable 'adict-last-check)))
 
 (defalias 'adict-mode 'auto-dictionary-mode)
 
@@ -281,110 +281,123 @@ If IDLE-ONLY is set, abort when an input event occurs."
   (let ((hash (make-hash-table :test 'equal)))
     ;; all words should be downcase
     (adict-add-word hash 1 "and" "are" "at" "been" "but" "by" "dear" "for"
-       "get" "have" "he" "hello" "it" "me" "my" "not" "on" "of" "off" "put"
-       "regarding" "set" "she" "some" "that" "than" "the" "there" "to" "us"
-       "was" "we" "while" "with" "yes" "you" "your" "yours")
+                    "get" "have" "he" "hello" "it" "me" "my" "not" "on" "of"
+                    "off" "put" "regarding" "set" "she" "some" "that" "than"
+                    "the" "there" "to" "us" "was" "we" "while" "with" "yes"
+                    "you" "your" "yours")
     (adict-add-word hash 2 "eins" "zwei" "drei" "vier" "fünf" "sechs" "sieben"
-       "acht" "neun" "zehn" "ab" "aber" "als" "andere" "anderem" "anderen"
-       "anderes" "anders" "auf" "aus" "bei" "beide" "beidem" "beiden" "beides"
-       "beim" "bereits" "bevor" "bis" "bisher" "bzw" "dabei" "dadurch"
-       "dagegen" "daher" "damit" "danach" "dann" "daran" "darauf" "daraus"
-       "darin" "darunter" "das" "dass" "davon" "dazu" "dem" "demselben"
-       "denen" "denselben" "der" "derart" "deren" "derer" "derselben"
-       "desselben" "dessen" "diese" "diesem" "diesen" "dieser" "dieses" "dir"
-       "doch" "dort" "durch" "eben" "ebenfalls" "ein" "eine" "einem" "einen"
-       "einer" "eines" "einzeln" "einzelne" "entweder" "er" "erst" "etwa"
-       "etwas" "falls" "freundlichen" "ganz" "gegen" "gemeinsam" "genau" "haben"
-       "hat" "hinter" "ich" "ihnen" "ihre" "ihrem" "ihren" "ihrer" "ihres" "im"
-       "immer" "indem" "infolge" "insgesamt" "ist" "jede" "jedem" "jeden"
-       "jeder" "jedes" "jedoch" "kann" "kein" "keine" "keinem" "keinen" "keiner"
-       "keines" "mal" "mehr" "mehrere" "mehreren" "mehrerer" "mit" "mittels"
-       "nach" "nacheinander" "neben" "nicht" "noch" "nur" "ob" "oberhalb" "oder"
-       "ohne" "schreibe" "sehr" "selbst" "sich" "sie" "sind" "sobald" "sodass"
-       "sofern" "sofort" "solange" "somit" "sondern" "sowie" "sowohl" "statt"
-       "teils" "teilweise" "um" "und" "unter" "unterhalb" "vom" "usw" "von"
-       "vor" "vorher" "warum" "wegen" "weil" "weiter" "weiterhin" "weitgehend"
-       "welche" "welchem" "welchen" "welcher" "welches" "wenigstens" "wenn"
-       "werden" "wie" "wieder" "wird" "wo" "wobei" "wodurch" "worauf" "worden"
-       "worin" "wurde" "zu" "zueinander" "zugleich" "zum" "zumindest" "zur"
-       "zusammen" "zwar" "zwecks" "zwischen" "bezüglich" "dafür" "für"
-       "gegenüber" "gemäß" "schließlich" "über" "während" "würde" "zunächst"
-       "zusätzlich")
+                    "acht" "neun" "zehn" "ab" "aber" "als" "andere" "anderem"
+                    "anderen" "anderes" "anders" "auf" "aus" "bei" "beide"
+                    "beidem" "beiden" "beides" "beim" "bereits" "bevor" "bis"
+                    "bisher" "bzw" "dabei" "dadurch" "dagegen" "daher" "damit"
+                    "danach" "dann" "daran" "darauf" "daraus" "darin" "darunter"
+                    "das" "dass" "davon" "dazu" "dem" "demselben" "denen"
+                    "denselben" "der" "derart" "deren" "derer" "derselben"
+                    "desselben" "dessen" "diese" "diesem" "diesen" "dieser"
+                    "dieses" "dir" "doch" "dort" "durch" "eben" "ebenfalls"
+                    "ein" "eine" "einem" "einen" "einer" "eines" "einzeln"
+                    "einzelne" "entweder" "er" "erst" "etwa" "etwas" "falls"
+                    "freundlichen" "ganz" "gegen" "gemeinsam" "genau" "haben"
+                    "hat" "hinter" "ich" "ihnen" "ihre" "ihrem" "ihren" "ihrer"
+                    "ihres" "im" "immer" "indem" "infolge" "insgesamt" "ist"
+                    "jede" "jedem" "jeden" "jeder" "jedes" "jedoch" "kann"
+                    "kein" "keine" "keinem" "keinen" "keiner" "keines" "mal"
+                    "mehr" "mehrere" "mehreren" "mehrerer" "mit" "mittels"
+                    "nach" "nacheinander" "neben" "nicht" "noch" "nur" "ob"
+                    "oberhalb" "oder" "ohne" "schreibe" "sehr" "selbst" "sich"
+                    "sie" "sind" "sobald" "sodass" "sofern" "sofort" "solange"
+                    "somit" "sondern" "sowie" "sowohl" "statt" "teils"
+                    "teilweise" "um" "und" "unter" "unterhalb" "vom" "usw" "von"
+                    "vor" "vorher" "warum" "wegen" "weil" "weiter" "weiterhin"
+                    "weitgehend" "welche" "welchem" "welchen" "welcher"
+                    "welches" "wenigstens" "wenn" "werden" "wie" "wieder"
+                    "wird" "wo" "wobei" "wodurch" "worauf" "worden" "worin"
+                    "wurde" "zu" "zueinander" "zugleich" "zum" "zumindest" "zur"
+                    "zusammen" "zwar" "zwecks" "zwischen" "bezüglich" "dafür"
+                    "für" "gegenüber" "gemäß" "schließlich" "über" "während"
+                    "würde" "zunächst" "zusätzlich")
     (adict-add-word hash 3 "aller" "allez" "allons" "alors" "au" "aux" "avoir"
-       "bonjour" "ces" "cet" "cette" "combien" "comme" "dans" "dire" "dis"
-       "disent" "disons" "dit" "dites" "elle" "elles" "et" "faire" "fais"
-       "faisons" "fait" "faites" "il" "ils" "je" "là" "mais" "ne" "oui" "où"
-       "parce" "pas" "plaît" "pour" "pourquoi" "quand" "qui" "revoir" "une"
-       "des" "vais" "vas" "voient" "voir" "vois" "voit" "vont" "vous" "voyez"
-       "voyons" "à" "ça" "être")
+                    "bonjour" "ces" "cet" "cette" "combien" "comme" "dans"
+                    "dire" "dis" "disent" "disons" "dit" "dites" "elle" "elles"
+                    "et" "faire" "fais" "faisons" "fait" "faites" "il" "ils"
+                    "je" "là" "mais" "ne" "oui" "où" "parce" "pas" "plaît"
+                    "pour" "pourquoi" "quand" "qui" "revoir" "une" "des" "vais"
+                    "vas" "voient" "voir" "vois" "voit" "vont" "vous" "voyez"
+                    "voyons" "à" "ça" "être")
     (adict-add-word hash 4 "además" "ahora" "al" "algo" "algunos" "antes"
-       "aquí" "así" "aunque" "año" "años" "bueno" "cada" "casa" "casi" "caso"
-       "como" "con" "contra" "cosas" "creo" "cuando" "cómo" "decimos" "decir"
-       "decis" "del" "desde" "después" "dicen" "dices" "digo" "dijo" "donde"
-       "dos" "día" "días" "ejemplo" "ella" "ellos" "entonces" "entre"
-       "era" "eres" "esa" "ese" "eso" "esta" "estaba" "estado" "estas"
-       "esto" "estos" "está" "están" "forma" "fue" "general" "gente" "gobierno"
-       "gran" "había" "hace" "hacemos" "hacen" "hacer" "haces" "hacia"
-       "hacéis" "hago" "han" "hasta" "hay" "hecho" "hombre" "hoy" "las" "lo"
-       "los" "luego" "mayor" "mejor" "menos" "mientras" "mismo"
-       "momento" "mucho" "mujer" "mundo" "muy" "más" "mí" "nada" "ni" "no" "nos"
-       "nosotros" "otra" "otras" "otro" "otros" "parece"
-       "parte" "país" "pero" "personas" "poco" "poder" "política" "porque"
-       "primera" "puede" "pueden" "qué" "sea" "según" "ser" "si"
-       "siempre" "sino" "sois" "somos" "son" "soy" "su" "sus" "sí"
-       "sólo" "tal" "también" "tan" "tanto" "tenemos" "tener" "tengo"
-       "tenéis" "tenía" "tiempo" "tiene" "tienen" "tienes" "time" "toda" "todas"
-       "todo" "todos" "trabajo" "tres" "una" "uno" "unos" "usted" "vamos" "ve"
-       "veces" "veis" "ven" "veo" "ver" "ves" "vida" "y" "ya" "yo" "él")
+                    "aquí" "así" "aunque" "año" "años" "bueno" "cada" "casa"
+                    "casi" "caso" "como" "con" "contra" "cosas" "creo" "cuando"
+                    "cómo" "decimos" "decir" "decis" "del" "desde" "después"
+                    "dicen" "dices" "digo" "dijo" "donde" "dos" "día" "días"
+                    "ejemplo" "ella" "ellos" "entonces" "entre" "era" "eres"
+                    "esa" "ese" "eso" "esta" "estaba" "estado" "estas" "esto"
+                    "estos" "está" "están" "forma" "fue" "general" "gente"
+                    "gobierno" "gran" "había" "hace" "hacemos" "hacen" "hacer"
+                    "haces" "hacia" "hacéis" "hago" "han" "hasta" "hay" "hecho"
+                    "hombre" "hoy" "las" "lo" "los" "luego" "mayor" "mejor"
+                    "menos" "mientras" "mismo" "momento" "mucho" "mujer" "mundo"
+                    "muy" "más" "mí" "nada" "ni" "no" "nos" "nosotros" "otra"
+                    "otras" "otro" "otros" "parece" "parte" "país" "pero"
+                    "personas" "poco" "poder" "política" "porque" "primera"
+                    "puede" "pueden" "qué" "sea" "según" "ser" "si" "siempre"
+                    "sino" "sois" "somos" "son" "soy" "su" "sus" "sí" "sólo"
+                    "tal" "también" "tan" "tanto" "tenemos" "tener" "tengo"
+                    "tenéis" "tenía" "tiempo" "tiene" "tienen" "tienes" "time"
+                    "toda" "todas" "todo" "todos" "trabajo" "tres" "una" "uno"
+                    "unos" "usted" "vamos" "ve" "veces" "veis" "ven" "veo" "ver"
+                    "ves" "vida" "y" "ya" "yo" "él")
     (adict-add-word hash 5 "och" "att" "en" "som" "det" "är" "av" "på"
-       "ett" "två" "tre" "fyra" "fem" "sex" "sju" "åtta" "nio" "tio"
-       "du" "jag" "inte" "nej" "vad" "defvar" "hej" "har" "kan"
-       "om" "för" "till" "barn" "eller" "finns" "många" "när"
-       "från" "ska" "klotter" "tycker" "sig" "vara" "vill" "konst" "så" "få"
-       "mycket" "andra" "måste" "göra" "skulle" "deras" "sverige" "här" "sina"
-       "bara" "också" "kommer" "hur" "alla" "gör" "sedan" "någon"
-       "efter")
+                    "ett" "två" "tre" "fyra" "fem" "sex" "sju" "åtta" "nio"
+                    "tio" "du" "jag" "inte" "nej" "vad" "defvar" "hej" "har"
+                    "kan" "om" "för" "till" "barn" "eller" "finns" "många" "när"
+                    "från" "ska" "klotter" "tycker" "sig" "vara" "vill" "konst"
+                    "så" "få" "mycket" "andra" "måste" "göra" "skulle" "deras"
+                    "sverige" "här" "sina" "bara" "också" "kommer" "hur" "alla"
+                    "gör" "sedan" "någon" "efter")
+    ;; based on http://bos.zrc-sazu.si/a_top2000_si.html:
     (adict-add-word hash 6
-       ;; slovenian (based on http://bos.zrc-sazu.si/a_top2000_si.html)
-       "ali" "ampak" "bi" "bil" "biti" "bo" "bodo" "bolj" "bom" "brez" "čas"
-       "če" "celo" "čeprav" "čez" "dan" "danes" "deset" "do" "dobro" "dolgo"
-       "dovolj" "drugače" "drugi" "dva"
-       "ena" "enkrat" "ga" "glede" "gotovo" "gre" "hitro" "hvala" "ima"
-       "iz" "jasno" "jaz" "jih" "jim" "kaj" "kajti" "kako" "kar"
-       "kateri" "kdaj" "kdo" "ker" "kje" "kljub" "kmalu" "ko" "koliko"
-       "konec" "kot" "lahko" "lep" "let" "malo" "manj" "močno"
-       "mogoče" "mu" "nad" "naj" "največ" "nam" "namreč" "naprej"
-       "nas" "naš" "nazaj" "nekaj" "nič" "nihče" "nikoli" "niso"
-       "niti" "nov" "očitno" "od" "okoli" "oziroma" "pa" "pač" "pet"
-       "po" "počasi" "pod" "pol" "poleg" "potem" "pozdrav" "prav" "pred"
-       "predvsem" "prej" "pri" "primer" "prosim" "proti" "prvi" "ravno"
-       "res" "saj" "sam" "še" "sedaj" "šele" "sem" "seveda" "sicer"
-       "skoraj" "skupaj" "smo" "so" "spet" "sploh" "sta" "ste" "število"
-       "štiri" "sto" "stran" "svoj" "ta" "tako" "takoj" "takrat" "tam"
-       "tega" "teh" "tem" "težko" "tisoč" "tisto"
-       "tokrat" "toliko" "torej" "treba" "tudi" "tukaj" "več" "vedno"
-       "veliko" "velja" "vendar" "vsaj" "vsak" "vse" "vsi" "za" "zadnji"
-       "zakaj" "zakon" "zaradi" "zato" "zdaj" "že" "zelo" "zgolj")
+                    "ali" "ampak" "bi" "bil" "biti" "bo" "bodo" "bolj" "bom"
+                    "brez" "čas" "če" "celo" "čeprav" "čez" "dan" "danes"
+                    "deset" "do" "dobro" "dolgo" "dovolj" "drugače" "drugi"
+                    "dva" "ena" "enkrat" "ga" "glede" "gotovo" "gre" "hitro"
+                    "hvala" "ima" "iz" "jasno" "jaz" "jih" "jim" "kaj" "kajti"
+                    "kako" "kar" "kateri" "kdaj" "kdo" "ker" "kje" "kljub"
+                    "kmalu" "ko" "koliko" "konec" "kot" "lahko" "lep" "let"
+                    "malo" "manj" "močno" "mogoče" "mu" "nad" "naj" "največ"
+                    "nam" "namreč" "naprej" "nas" "naš" "nazaj" "nekaj" "nič"
+                    "nihče" "nikoli" "niso" "niti" "nov" "očitno" "od" "okoli"
+                    "oziroma" "pa" "pač" "pet" "po" "počasi" "pod" "pol" "poleg"
+                    "potem" "pozdrav" "prav" "pred" "predvsem" "prej" "pri"
+                    "primer" "prosim" "proti" "prvi" "ravno" "res" "saj" "sam"
+                    "še" "sedaj" "šele" "sem" "seveda" "sicer" "skoraj" "skupaj"
+                    "smo" "so" "spet" "sploh" "sta" "ste" "število" "štiri"
+                    "sto" "stran" "svoj" "ta" "tako" "takoj" "takrat" "tam"
+                    "tega" "teh" "tem" "težko" "tisoč" "tisto" "tokrat" "toliko"
+                    "torej" "treba" "tudi" "tukaj" "več" "vedno" "veliko"
+                    "velja" "vendar" "vsaj" "vsak" "vse" "vsi" "za" "zadnji"
+                    "zakaj" "zakon" "zaradi" "zato" "zdaj" "že" "zelo" "zgolj")
     (adict-add-word hash 7 "az" "èn" "ö" "ti" "ök" "csak" "hogy"
-       "nem" "igen" "és" "így" "úgy" "s" "jól" "van" "nincs" "nekem" "neki"
-       "amely" "ki" "fel" "ezek" "azok" "ezen" "azon" "közé"
-       "meg" "még" "azaz" "aki" "volt" "egyéb" "vagy" "ennek" "annak" "talán")
+                    "nem" "igen" "és" "így" "úgy" "s" "jól" "van" "nincs"
+                    "nekem" "neki" "amely" "ki" "fel" "ezek" "azok" "ezen"
+                    "azon" "közé" "meg" "még" "azaz" "aki" "volt" "egyéb" "vagy"
+                    "ennek" "annak" "talán")
     (adict-add-word hash 8 "nu" "ea" "noi" "voi" "ei"
-       "să" "în" "peste" "şi" "la" "unless" "despre" "din" "cele" "dintre"
-       "avem" "vă" "oricare" "se" "acest" "fi" "pe" "care" "mai" "dacă" "cum"
-       "te" "numai" "sunt""fost" "când" "aţi" "am" "pentru" "acum" "acesta"
-       "ca" "sub" "ani")
+                    "să" "în" "peste" "şi" "la" "unless" "despre" "din" "cele"
+                    "dintre" "avem" "vă" "oricare" "se" "acest" "fi" "pe" "care"
+                    "mai" "dacă" "cum" "te" "numai" "sunt""fost" "când" "aţi"
+                    "am" "pentru" "acum" "acesta" "ca" "sub" "ani")
+    ;; from http://home.unilang.org/main/wiki2/index.php/Portuguese_wordlist:
     (adict-add-word hash 9
-      ;; from http://home.unilang.org/main/wiki2/index.php/Portuguese_wordlist
-      "e" "são" "em" "têm" "mas" "querido" "querida" "caro" "cara" "para"
-      "obter" "pegar" "oi" "aquilo" "coisa" "meu" "não" "pôr"
-      "meter" "colocar" "acerca" "algum" "alguns" "alguma" "algumas" "lá" "além"
-      "nós" "eles" "ela" "elas" "teu" "enquanto" "com" "contigo" "você" "vosso"
-      "sim" "olá" "tchau" "adeus" "bem-vindo" "obrigado" "obrigada" "já"
-      "também" "sempre" "bonito" "certamente" "claramente" "cedo"
-      "longe" "tarde" "provavelmente" "alto" "talvez" "muito" "perto"
-      "agora" "apenas" "possivelmente" "raramente" "ainda" "acolá" "hoje"
-      "amanhã" "improvável" "bem" "errado" "ontem")
+                    "e" "são" "em" "têm" "mas" "querido" "querida" "caro" "cara"
+                    "para" "obter" "pegar" "oi" "aquilo" "coisa" "meu" "não"
+                    "pôr" "meter" "colocar" "acerca" "algum" "alguns" "alguma"
+                    "algumas" "lá" "além" "nós" "eles" "ela" "elas" "teu"
+                    "enquanto" "com" "contigo" "você" "vosso" "sim" "olá"
+                    "tchau" "adeus" "bem-vindo" "obrigado" "obrigada" "já"
+                    "também" "sempre" "bonito" "certamente" "claramente" "cedo"
+                    "longe" "tarde" "provavelmente" "alto" "talvez" "muito"
+                    "perto" "agora" "apenas" "possivelmente" "raramente" "ainda"
+                    "acolá" "hoje" "amanhã" "improvável" "bem" "errado" "ontem")
     ;; don't use because they're ambiguous:
     ;; a i des du bien en es les que se tu un va el le te mi be is az da este
     ;; or ce le o de den ha med na sido para soble eu ele nunca ter lugar
@@ -402,8 +415,8 @@ If IDLE-ONLY is set, abort when an input event occurs."
     (adict-foreach-word
      (point-min) (point-max) 8
      (lambda (word)
-        ;; increase language count of WORD by one
-        (callf incf (elt counts (adict-evaluate-word word))))
+       ;; increase language count of WORD by one
+       (callf incf (elt counts (adict-evaluate-word word))))
      idle-only)
     counts))
 
@@ -460,7 +473,7 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
     (move-overlay overlay beg (point))))
 
 (defun adict-conditional-modification (overlay afterp beg end
-                                       &optional pre-length)
+                                               &optional pre-length)
   (when afterp
     (delete-overlay overlay)
     (unless (setq adict-conditional-overlay-list
@@ -479,7 +492,7 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
                                       ov))))))
 
 
-;;; Functions for 3rd Party Use ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;; Functions for 3rd Party Use ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun adict-guess-word-language (word)
   "Determine language of WORD using ``adict-hash''."
