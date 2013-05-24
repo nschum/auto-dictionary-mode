@@ -19,6 +19,21 @@
                  (flet ((ispell-valid-dictionary-list () '("english" "deutsch")))
                    (adict-guess-dictionary-name '("fr" "francais"))))))
 
+(ert-deftest adict--guess-dictionary-cons ()
+  (should (equal '("de" . "deutsch")
+                 (flet ((ispell-valid-dictionary-list
+                         ()
+                         '("francais" "deutsch" "english")))
+                   (adict--guess-dictionary-cons '("de" "deutsch")))))
+
+  (should (equal '("de" . "de")
+                 (flet ((ispell-valid-dictionary-list () '("fr" "de" "en")))
+                   (adict--guess-dictionary-cons '("de" "german")))))
+
+  (should (equal '("de" . nil)
+                 (flet ((ispell-valid-dictionary-list () '("fr" "en")))
+                   (adict--guess-dictionary-cons '("de" "german"))))))
+
 (ert-deftest adict--evaluate-buffer-find-max-index-should-find-max-index ()
   (should (equal 1 (flet ((adict-evaluate-buffer (idle-only) [20 10 0]))
                      (adict--evaluate-buffer-find-max-index nil))))

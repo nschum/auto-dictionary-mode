@@ -113,11 +113,13 @@ This is called when `auto-dictionary-mode' changes its mind or
       (when (cdr names)
         (adict-guess-dictionary-name (cdr names) list))))
 
+(defun adict--guess-dictionary-cons (names)
+  (cons (car names) (adict-guess-dictionary-name names)))
+
 (defvar adict-dictionary-list
   ;; we can't be sure of the actual dictionary names
-  (mapcar 'adict-guess-dictionary-name
-          '(nil
-            ("en" "english")
+  (mapcar 'adict--guess-dictionary-cons
+          '(("en" "english")
             ("de" "deutsch" "german")
             ("fr" "francais" "french")
             ("es" "español" "spanish")
@@ -127,10 +129,12 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("ro" "românâ" "româneşte" "romanian")
             ("pt" "português" "portuguese")))
   "The dictionaries `auto-dictionary-mode' uses.
-Change them if you'd like a different region for your
+Change the second part of each pair to specify a specific dictionary for
+that language. You can use this to specify a different region for your
 language (e.g. \"en_US\" or \"american\").  Setting it to nil prevents
-that language from being used.  The order must conform to the laguages
-specified in `adict-language-list'")
+that language from being used.
+
+Each pair's car corresponds to a value in `adict-language-list'")
 
 (defvar adict-lighter nil)
 (make-variable-buffer-local 'adict-lighter)
