@@ -94,7 +94,7 @@ Higher values mean fewer checks."
   :group 'auto-dictionary)
 
 (defcustom adict-change-dictionary-hook
-  '((lambda () (ignore-errors (when flyspell-mode (flyspell-buffer)))))
+  '((lambda () (with-local-quit (when flyspell-mode (flyspell-buffer)))))
   "*List of functions to be called when the buffer language is changed.
 This is called when `auto-dictionary-mode' changes its mind or
 `adict-change-dictionary' is called."
