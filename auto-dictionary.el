@@ -45,6 +45,7 @@
 ;;
 ;;; Change Log:
 ;;
+;;    `adict-dictionary-list' now has an easier to customize format.
 ;;    `adict-guess-dictionary' no longer changes the dictionary if aborted.
 ;;
 ;; 2013-03-26 (1.0.2)
