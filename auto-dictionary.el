@@ -106,9 +106,7 @@ This is called when `auto-dictionary-mode' changes its mind or
 (defun adict-guess-dictionary-name (names &optional list)
   "Return the element in NAMES found in `ispell-valid-dictionary-list'."
   (unless list
-    (setq list (if (fboundp 'ispell-valid-dictionary-list)
-                   (ispell-valid-dictionary-list)
-                 (cdr (mapcar 'car ispell-dictionary-alist)))))
+    (setq list (ispell-valid-dictionary-list)))
   (or (car (member (car names) list))
       (when (cdr names)
         (adict-guess-dictionary-name (cdr names) list))))
