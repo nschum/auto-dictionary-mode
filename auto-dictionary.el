@@ -114,7 +114,17 @@ This is called when `auto-dictionary-mode' changes its mind or
 (defun adict--guess-dictionary-cons (names)
   (cons (car names) (adict-guess-dictionary-name names)))
 
-(defvar adict-dictionary-list
+(defconst adict-language-list
+  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt")
+  "The languages, in order, which `adict-hash' contains.")
+
+(defun adict--dictionary-alist-type ()
+  `(repeat (cons (choice . ,(mapcar (lambda (lang) `(const ,lang))
+                                    (cdr adict-language-list)))
+                 (choice (const :tag "Off" nil)
+                         (string :tag "Dictionary name")))))
+
+(defcustom adict-dictionary-list
   ;; we can't be sure of the actual dictionary names
   (mapcar 'adict--guess-dictionary-cons
           '(("en" "english")
@@ -132,7 +142,9 @@ that language. You can use this to specify a different region for your
 language (e.g. \"en_US\" or \"american\").  Setting it to nil prevents
 that language from being used.
 
-Each pair's car corresponds to a value in `adict-language-list'")
+Each pair's car corresponds to a value in `adict-language-list'"
+  :group 'auto-dictionary
+  :type (adict--dictionary-alist-type))
 
 (defvar adict-lighter nil)
 (make-variable-buffer-local 'adict-lighter)
@@ -252,10 +264,6 @@ If IDLE-ONLY is set, abort when an input event occurs."
         (setq beg (point))
         (when (<= (skip-syntax-forward "w") maxlength)
           (funcall function (buffer-substring-no-properties beg (point))))))))
-
-(defconst adict-language-list
-  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt")
-  "The languages, in order, which `adict-hash' contains.")
 
 (defmacro adict-add-word (hash lang &rest words)
   `(dolist (word '(,@words))

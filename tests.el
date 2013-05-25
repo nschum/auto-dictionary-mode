@@ -2,6 +2,13 @@
 (require 'auto-dictionary)
 (eval-when-compile (require 'cl))
 
+(ert-deftest adict--dictionary-alist-type ()
+  (should (equal '(repeat (cons (choice (const "de") (const "en"))
+                                (choice (const :tag "Off" nil)
+                                        (string :tag "Dictionary name"))))
+                 (let ((adict-language-list '(nil "de" "en")))
+                   (adict--dictionary-alist-type)))))
+
 (ert-deftest adict--guess-dictionary-name ()
   (should (equal "deutsch"
                  (adict-guess-dictionary-name '("de" "deutsch" "german")
