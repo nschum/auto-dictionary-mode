@@ -45,6 +45,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Support for nb, nn, dk, hi, el, and grc.  (thanks to Tore Ferner)
+;;
 ;; 2013-03-26 (1.0.2)
 ;;    The initial guess is now triggered without any buffer changes.
 ;;
