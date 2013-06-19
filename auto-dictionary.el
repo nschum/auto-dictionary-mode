@@ -104,9 +104,9 @@ This is called when `auto-dictionary-mode' changes its mind or
 (defun adict-guess-dictionary-name (names &optional list)
   "Return the element in NAMES found in `ispell-valid-dictionary-list'."
   (if list
-       (or (car (member (car names) list))
-           (when (cdr names)
-             (adict-guess-dictionary-name (cdr names))))
+      (or (car (member (car names) list))
+          (when (cdr names)
+            (adict-guess-dictionary-name (cdr names))))
     (or (adict-guess-dictionary-name
          names
          (if (fboundp 'ispell-valid-dictionary-list)
@@ -127,12 +127,12 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("hu" "magyar" "hungarian")
             ("ro" "românâ" "româneşte" "romanian")
             ("pt" "português" "portuguese")
-	    ("nb" "bokmål" "norwegian bokmål")
-	    ("dk" "dansk" "danish")
-	    ("grc" "ἑλληνικά" "classical greek")
-	    ("el" "νέα ελληνικά" "modern greek")
-	    ("hi" "हिन्दी" "hindi")
-	    ("nn" "nynorsk" "norwegian nynorsk")))
+            ("nb" "bokmål" "norwegian bokmål")
+            ("dk" "dansk" "danish")
+            ("grc" "ἑλληνικά" "classical greek")
+            ("el" "νέα ελληνικά" "modern greek")
+            ("hi" "हिन्दी" "hindi")
+            ("nn" "nynorsk" "norwegian nynorsk")))
   "The dictionaries `auto-dictionary-mode' uses.
 Change them if you'd like a different region for your
 language (e.g. \"en_US\" or \"american\").  Setting it to nil prevents
@@ -156,21 +156,21 @@ specified in `adict-language-list'")
 ;;;###autoload
 (define-minor-mode auto-dictionary-mode
   "A minor mode that automatically sets `ispell-dictionary`."
-   nil adict-lighter nil
-   (if auto-dictionary-mode
-       (progn
-         (adict-update-lighter)
-         (unless adict-timer
-           (setq adict-timer
-                 (when adict-idle-time
-                   (run-with-idle-timer adict-idle-time t
-                                        'adict-guess-dictionary-maybe
-                                        (current-buffer)))))
-         (add-hook 'kill-buffer-hook 'adict--cancel-timer nil t))
-     (adict--cancel-timer)
-     (remove-hook 'kill-buffer-hook 'adict--cancel-timer t)
-     (kill-local-variable 'adict-lighter)
-     (kill-local-variable 'adict-last-check)))
+  nil adict-lighter nil
+  (if auto-dictionary-mode
+      (progn
+        (adict-update-lighter)
+        (unless adict-timer
+          (setq adict-timer
+                (when adict-idle-time
+                  (run-with-idle-timer adict-idle-time t
+                                       'adict-guess-dictionary-maybe
+                                       (current-buffer)))))
+        (add-hook 'kill-buffer-hook 'adict--cancel-timer nil t))
+    (adict--cancel-timer)
+    (remove-hook 'kill-buffer-hook 'adict--cancel-timer t)
+    (kill-local-variable 'adict-lighter)
+    (kill-local-variable 'adict-last-check)))
 
 (defalias 'adict-mode 'auto-dictionary-mode)
 
@@ -272,7 +272,8 @@ If IDLE-ONLY is set, abort when an input event occurs."
     pos))
 
 (defconst adict-language-list
-  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "dk" "grc" "el" "hi" "nn")
+  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "dk" "grc" "el" "hi"
+        "nn")
   "The languages, in order, which `adict-hash' contains.")
 
 (defmacro adict-add-word (hash lang &rest words)
@@ -286,327 +287,340 @@ If IDLE-ONLY is set, abort when an input event occurs."
   ;; http://www.verbix.com/languages/
   (let ((hash (make-hash-table :test 'equal)))
     ;; all words should be downcase
-    (adict-add-word hash 1 "and" "are" "at" "been" "but" "dear"
-       "get" "have" "he" "hello" "it" "me" "my" "not" "on" "of" "off" "put"
-       "regarding" "set" "she" "some" "that" "than" "the" "there" "us"
-       "was" "we" "while" "with" "yes" "you" "your" "yours")
+    (adict-add-word hash 1 "and" "are" "at" "been" "but" "dear" "get" "have"
+                    "he" "hello" "it" "me" "my" "not" "on" "of" "off" "put"
+                    "regarding" "set" "she" "some" "that" "than" "the" "there"
+                    "us" "was" "we" "while" "with" "yes" "you" "your" "yours")
     ;; Don't use these words, because they are also very common in
     ;; Scandinavia: "for" "to" "by"
     (adict-add-word hash 2 "eins" "zwei" "drei" "vier" "fünf" "sechs" "sieben"
-       "acht" "neun" "zehn" "aber" "als" "andere" "anderem" "anderen"
-       "anderes" "auf" "aus" "bei" "beide" "beidem" "beiden" "beides"
-       "beim" "bereits" "bevor" "bis" "bisher" "bzw" "dabei" "dadurch"
-       "dagegen" "daher" "damit" "danach" "dann" "daran" "darauf" "daraus"
-       "darin" "darunter" "das" "davon" "dazu" "demselben"
-       "denen" "denselben" "derart" "deren" "derer" "derselben"
-       "desselben" "dessen" "diese" "diesem" "diesen" "dieser" "dieses" "dir"
-       "doch" "dort" "durch" "eben" "ebenfalls" "einem" "einen"
-       "einer" "eines" "einzeln" "einzelne" "entweder" "erst" "etwa"
-       "etwas" "falls" "freundlichen" "ganz" "gegen" "gemeinsam" "genau" "haben"
-       "hinter" "ich" "ihnen" "ihre" "ihrem" "ihren" "ihrer" "ihres" "im"
-       "immer" "indem" "infolge" "insgesamt" "ist" "jede" "jedem" "jeden"
-       "jeder" "jedes" "jedoch" "kann" "kein" "keine" "keinem" "keinen" "keiner"
-       "keines" "mehr" "mehrere" "mehreren" "mehrerer" "mit" "mittels"
-       "nach" "nacheinander" "neben" "nicht" "noch" "nur" "oberhalb" "oder"
-       "ohne" "schreibe" "sehr" "selbst" "sich" "sie" "sind" "sobald" "sodass"
-       "sofern" "sofort" "solange" "somit" "sondern" "sowie" "sowohl" "statt"
-       "teils" "teilweise" "um" "und" "unter" "unterhalb" "vom" "usw" "von"
-       "vor" "vorher" "warum" "wegen" "weil" "weiter" "weiterhin" "weitgehend"
-       "welche" "welchem" "welchen" "welcher" "welches" "wenigstens" "wenn"
-       "werden" "wie" "wieder" "wird" "wo" "wobei" "wodurch" "worauf" "worden"
-       "worin" "wurde" "zu" "zueinander" "zugleich" "zum" "zumindest" "zur"
-       "zusammen" "zwar" "zwecks" "zwischen" "bezüglich" "dafür" "für"
-       "gegenüber" "gemäß" "schließlich" "über" "während" "würde" "zunächst"
-       "zusätzlich")
+                    "acht" "neun" "zehn" "aber" "als" "andere" "anderem"
+                    "anderen" "anderes" "auf" "aus" "bei" "beide" "beidem"
+                    "beiden" "beides" "beim" "bereits" "bevor" "bis" "bisher"
+                    "bzw" "dabei" "dadurch" "dagegen" "daher" "damit" "danach"
+                    "dann" "daran" "darauf" "daraus" "darin" "darunter" "das"
+                    "davon" "dazu" "demselben" "denen" "denselben" "derart"
+                    "deren" "derer" "derselben" "desselben" "dessen" "diese"
+                    "diesem" "diesen" "dieser" "dieses" "dir" "doch" "dort"
+                    "durch" "eben" "ebenfalls" "einem" "einen" "einer" "eines"
+                    "einzeln" "einzelne" "entweder" "erst" "etwa" "etwas"
+                    "falls" "freundlichen" "ganz" "gegen" "gemeinsam" "genau"
+                    "haben" "hinter" "ich" "ihnen" "ihre" "ihrem" "ihren"
+                    "ihrer" "ihres" "im" "immer" "indem" "infolge" "insgesamt"
+                    "ist" "jede" "jedem" "jeden" "jeder" "jedes" "jedoch" "kann"
+                    "kein" "keine" "keinem" "keinen" "keiner" "keines" "mehr"
+                    "mehrere" "mehreren" "mehrerer" "mit" "mittels" "nach"
+                    "nacheinander" "neben" "nicht" "noch" "nur" "oberhalb"
+                    "oder" "ohne" "schreibe" "sehr" "selbst" "sich" "sie" "sind"
+                    "sobald" "sodass" "sofern" "sofort" "solange" "somit"
+                    "sondern" "sowie" "sowohl" "statt" "teils" "teilweise" "um"
+                    "und" "unter" "unterhalb" "vom" "usw" "von" "vor" "vorher"
+                    "warum" "wegen" "weil" "weiter" "weiterhin" "weitgehend"
+                    "welche" "welchem" "welchen" "welcher" "welches"
+                    "wenigstens" "wenn" "werden" "wie" "wieder" "wird" "wo"
+                    "wobei" "wodurch" "worauf" "worden" "worin" "wurde" "zu"
+                    "zueinander" "zugleich" "zum" "zumindest" "zur" "zusammen"
+                    "zwar" "zwecks" "zwischen" "bezüglich" "dafür" "für"
+                    "gegenüber" "gemäß" "schließlich" "über" "während" "würde"
+                    "zunächst" "zusätzlich")
     ;; Also common in non-German languages, don't use:
-    ;;  "dass" "ab" "ob" "er" "der" "dem" "hat" "mal" "ein" "eine" "anders"
-    (adict-add-word hash 3 "allez" "allons" "alors" "aux" "avoir"
-       "bonjour" "ces" "cet" "cette" "combien" "comme" "dire"
-       "disent" "disons" "dites" "elle" "faire" "fais"
-       "faisons" "fait" "faites" "il" "ils" "je" "là" "mais" "ne" "oui" "où"
-       "parce" "pas" "plaît" "pour" "pourquoi" "quand" "qui" "revoir" "une"
-       "des" "vais" "voient" "voir" "vois" "voit" "vont" "vous" "voyez"
-       "voyons" "à" "ça" "être")
+    ;; "dass" "ab" "ob" "er" "der" "dem" "hat" "mal" "ein" "eine" "anders"
+    (adict-add-word hash 3 "allez" "allons" "alors" "aux" "avoir" "bonjour"
+                    "ces" "cet" "cette" "combien" "comme" "dire" "disent"
+                    "disons" "dites" "elle" "faire" "fais" "faisons" "fait"
+                    "faites" "il" "ils" "je" "là" "mais" "ne" "oui" "où" "parce"
+                    "pas" "plaît" "pour" "pourquoi" "quand" "qui" "revoir" "une"
+                    "des" "vais" "voient" "voir" "vois" "voit" "vont" "vous"
+                    "voyez" "voyons" "à" "ça" "être")
     ;; Don't use:
     ;;  "dit" "aller" "dans" "dis" "vas" "et" "au" "elles"
     (adict-add-word hash 4 "además" "ahora" "al" "algo" "algunos" "antes"
-       "aquí" "así" "aunque" "año" "años" "bueno" "cada" "casa" "casi" "caso"
-       "como" "con" "contra" "cosas" "creo" "cuando" "cómo" "decimos" "decir"
-       "decis" "desde" "después" "dicen" "dices" "digo" "dijo" "donde"
-       "dos" "día" "días" "ejemplo" "ella" "ellos" "entonces" "entre"
-       "era" "eres" "eso" "esta" "estaba" "estado" "estas"
-       "esto" "estos" "está" "están" "forma" "fue" "gente" "gobierno"
-       "había" "hace" "hacemos" "hacen" "hacer" "haces" "hacia"
-       "hacéis" "hago" "hay" "hecho" "hombre" "hoy"
-       "luego" "mayor" "mejor" "menos" "mientras" "mismo"
-       "momento" "mucho" "mujer" "mundo" "muy" "más" "mí" "nada" "ni" "nos"
-       "nosotros" "otra" "otras" "otro" "otros" "parece"
-       "parte" "país" "pero" "personas" "poco" "poder" "política" "porque"
-       "primera" "puede" "pueden" "qué" "sea" "según"
-       "siempre" "sino" "sois" "somos" "son" "soy" "su" "sus" "sí"
-       "sólo" "también" "tan" "tanto" "tenemos" "tener" "tengo"
-       "tenéis" "tenía" "tiempo" "tiene" "tienen" "tienes" "toda" "todas"
-       "todo" "todos" "trabajo" "una" "uno" "unos" "usted" "vamos"
-       "veces" "veo" "ver" "ves" "vida" "y" "ya" "yo" "él")
+                    "aquí" "así" "aunque" "año" "años" "bueno" "cada" "casa"
+                    "casi" "caso" "como" "con" "contra" "cosas" "creo" "cuando"
+                    "cómo" "decimos" "decir" "decis" "desde" "después" "dicen"
+                    "dices" "digo" "dijo" "donde" "dos" "día" "días" "ejemplo"
+                    "ella" "ellos" "entonces" "entre" "era" "eres" "eso" "esta"
+                    "estaba" "estado" "estas" "esto" "estos" "está" "están"
+                    "forma" "fue" "gente" "gobierno" "había" "hace" "hacemos"
+                    "hacen" "hacer" "haces" "hacia" "hacéis" "hago" "hay"
+                    "hecho" "hombre" "hoy" "luego" "mayor" "mejor" "menos"
+                    "mientras" "mismo" "momento" "mucho" "mujer" "mundo" "muy"
+                    "más" "mí" "nada" "ni" "nos" "nosotros" "otra" "otras"
+                    "otro" "otros" "parece" "parte" "país" "pero" "personas"
+                    "poco" "poder" "política" "porque" "primera" "puede"
+                    "pueden" "qué" "sea" "según" "siempre" "sino" "sois" "somos"
+                    "son" "soy" "su" "sus" "sí" "sólo" "también" "tan" "tanto"
+                    "tenemos" "tener" "tengo" "tenéis" "tenía" "tiempo" "tiene"
+                    "tienen" "tienes" "toda" "todas" "todo" "todos" "trabajo"
+                    "una" "uno" "unos" "usted" "vamos" "veces" "veo" "ver" "ves"
+                    "vida" "y" "ya" "yo" "él")
     ;; Don't use:
     ;;  "general" "lo" "las" "ven" "ve" "veis" "tal"  "ser" "si" "los" "gran"
-    ;;  "del"  "han" "hasta" "no" "time" "tres" "esa" "ese" 
+    ;;  "del"  "han" "hasta" "no" "time" "tres" "esa" "ese"
     (adict-add-word hash 5
-       ;; Swedish (sv)
-       ;; Many, many of the most frequent words are common
-       ;; in Swedish, Danish and Norwegian. Therefore: word list
-       ;; is made longer since many core words are exluded.
-       ;;
-       ;; Based on:
-       ;; http://sskkii.gu.se/jens/publications/bfiles/B62.pdf
-       ;; http://rl.se/tusen.html
-       ;; More or less listed with descending frequency, some random:
-       "och" "att" "är" "första" "andra"
-       "två" "fyra" "åtta" "nio" "tio" "tålv" "då" "också" "väl"
-       "jag" "inte" "vad" "hej" "bara" "något" "sej" "för" "finns"
-       "från" "ska" "klotter" "sig" "vara" "vill" "konst"
-       "mycket" "måste" "deras" "här" "sina"
-       "hur" "sedan" "någon" "mej" "utan" "när" "tycker" "säga"
-       "kanske" "göra" "gör" "alla" "just" "upp" "sådant"
-       "hon" "menar" "menade" "någonting" "säger" "sade" "väldigt"
-       "sätt" "honom" "ihop" "gick" "kunna" "nog" "fick" "många"
-       "över" "annat" "nä" "fläta" "koppla" "möta" "räkna" "träffa"
-       "väga" "väva" "mina" "alltså" "kunnat" "varit" "avstånd"
-       "rätt" "kuggades" "flagga" "undertryckt" "knuffade" "omkull"
-       "överrumplad" "iväg" "nåt" "tillräckligt" "kostar" "kostade"
-       "halva" "vägen" "glömt" "glömma" "exempel" "liknande"
-       "avskrekkande" "förekomma" "flera" "haft" "senare" "arbete"
-       "arbetet" "arbeten" "arbeta" "läsa" "typ" "motiverad"
-       "erfarenhet" "ungefär" "även" "kronor" "detta" "procent"
-       "svenska" "allt" "mellan" "stora" "enligt" "redan" "inom"
-       "ju" "samma" "själv" "tidigare" "miljoner" "dock" "olika"
-       "plats" "gäller" "därför" "dessutom" "eftersom" "trots"
-       "människor" "bättre" "ändå" "inför" "senaste" "samtidigt"
-       "ännu" "större" "nästa" "pengar" "stället" "tillbaka"
-       "själva" "tillsammans" "nästan" "längre" "förra" "svårt"
-       "bästa" "handlar" "länge" "frågan" "spelar" "fortfarande"
-       "bakom" "berättar" "början" "varför" "företag"
-       "fanns" "egna" "utanför" "långt" "framför" "båda" "behöver"
-       "miljarder" "största" "polisen" "världen" "direkt" "innebär"
-       "bör" "vidare" "håller" "lätt" "ytterligare" "kvinnor"
-       "kvinna" "särskilt" "började" "däremot" "känner" "beslut"
-       "egentligen" "länder" "börjar" "väder" "hjälp" "ordförande"
-       "tilbaka" "medarbetare" "viktiga")
+                    ;; Swedish (sv)
+                    ;; Many, many of the most frequent words are common
+                    ;; in Swedish, Danish and Norwegian. Therefore: word list
+                    ;; is made longer since many core words are exluded.
+                    ;;
+                    ;; Based on:
+                    ;; http://sskkii.gu.se/jens/publications/bfiles/B62.pdf
+                    ;; http://rl.se/tusen.html
+                    ;; More or less listed with descending frequency, some
+                    ;; random:
+                    "och" "att" "är" "första" "andra"
+                    "två" "fyra" "åtta" "nio" "tio" "tålv" "då" "också" "väl"
+                    "jag" "inte" "vad" "hej" "bara" "något" "sej" "för" "finns"
+                    "från" "ska" "klotter" "sig" "vara" "vill" "konst"
+                    "mycket" "måste" "deras" "här" "sina"
+                    "hur" "sedan" "någon" "mej" "utan" "när" "tycker" "säga"
+                    "kanske" "göra" "gör" "alla" "just" "upp" "sådant"
+                    "hon" "menar" "menade" "någonting" "säger" "sade" "väldigt"
+                    "sätt" "honom" "ihop" "gick" "kunna" "nog" "fick" "många"
+                    "över" "annat" "nä" "fläta" "koppla" "möta" "räkna" "träffa"
+                    "väga" "väva" "mina" "alltså" "kunnat" "varit" "avstånd"
+                    "rätt" "kuggades" "flagga" "undertryckt" "knuffade" "omkull"
+                    "överrumplad" "iväg" "nåt" "tillräckligt" "kostar" "kostade"
+                    "halva" "vägen" "glömt" "glömma" "exempel" "liknande"
+                    "avskrekkande" "förekomma" "flera" "haft" "senare" "arbete"
+                    "arbetet" "arbeten" "arbeta" "läsa" "typ" "motiverad"
+                    "erfarenhet" "ungefär" "även" "kronor" "detta" "procent"
+                    "svenska" "allt" "mellan" "stora" "enligt" "redan" "inom"
+                    "ju" "samma" "själv" "tidigare" "miljoner" "dock" "olika"
+                    "plats" "gäller" "därför" "dessutom" "eftersom" "trots"
+                    "människor" "bättre" "ändå" "inför" "senaste" "samtidigt"
+                    "ännu" "större" "nästa" "pengar" "stället" "tillbaka"
+                    "själva" "tillsammans" "nästan" "längre" "förra" "svårt"
+                    "bästa" "handlar" "länge" "frågan" "spelar" "fortfarande"
+                    "bakom" "berättar" "början" "varför" "företag"
+                    "fanns" "egna" "utanför" "långt" "framför" "båda" "behöver"
+                    "miljarder" "största" "polisen" "världen" "direkt" "innebär"
+                    "bör" "vidare" "håller" "lätt" "ytterligare" "kvinnor"
+                    "kvinna" "särskilt" "började" "däremot" "känner" "beslut"
+                    "egentligen" "länder" "börjar" "väder" "hjälp" "ordförande"
+                    "tilbaka" "medarbetare" "viktiga")
     ;; Don't use for Swedish, because they are also *very* common in
     ;; Norwegian and/or Danish:
     ;;  "barn" "eller" "en" "som" "det" "av" "på" "tre" "fem" "sex" "sju"
     ;;  "om" "du" "har" "kan" "så" "få" "skulle" "kommer" "ett" "jag"
-    ;;  "sverige" "nej" "vill" "till" "medan" 
+    ;;  "sverige" "nej" "vill" "till" "medan"
     (adict-add-word hash 6
-       ;; slovenian (based on http://bos.zrc-sazu.si/a_top2000_si.html)
-       "ali" "ampak" "bi" "biti" "bodo" "bolj" "brez" "čas"
-       "če" "celo" "čeprav" "čez" "dan" "danes" "deset" "dobro" "dolgo"
-       "dovolj" "drugače" "drugi" "dva"
-       "enkrat" "gotovo" "gre" "hitro" "hvala" "ima"
-       "iz" "jasno" "jaz" "jih" "jim" "kaj" "kajti" "kako"
-       "kateri" "kdaj" "kdo" "ker" "kje" "kljub" "kmalu" "ko" "koliko"
-       "konec" "kot" "lahko" "lep" "malo" "manj" "močno"
-       "mogoče" "mu" "nad" "naj" "največ" "nam" "namreč" "naprej"
-       "nas" "naš" "nazaj" "nekaj" "nič" "nihče" "nikoli" "niso"
-       "niti" "nov" "očitno" "od" "okoli" "oziroma" "pa" "pač"
-       "po" "počasi" "pod" "poleg" "potem" "pozdrav" "prav" "pred"
-       "predvsem" "prej" "pri" "prosim" "proti" "prvi" "ravno"
-       "res" "saj" "sam" "še" "sedaj" "šele" "sem" "seveda" "sicer"
-       "skoraj" "skupaj" "smo" "spet" "sploh" "ste" "število"
-       "štiri" "stran" "svoj" "tako" "takoj" "takrat"
-       "tega" "teh" "tem" "težko" "tisoč" "tisto"
-       "tokrat" "toliko" "torej" "treba" "tudi" "tukaj" "več" "vedno"
-       "veliko" "velja" "vendar" "vsaj" "vsak" "vse" "vsi" "za" "zadnji"
-       "zakaj" "zakon" "zaradi" "zato" "zdaj" "že" "zelo" "zgolj")
+                    ;; (based on http://bos.zrc-sazu.si/a_top2000_si.html)
+                    "ali" "ampak" "bi" "biti" "bodo" "bolj" "brez" "čas" "če"
+                    "celo" "čeprav" "čez" "dan" "danes" "deset" "dobro" "dolgo"
+                    "dovolj" "drugače" "drugi" "dva" "enkrat" "gotovo" "gre"
+                    "hitro" "hvala" "ima" "iz" "jasno" "jaz" "jih" "jim" "kaj"
+                    "kajti" "kako" "kateri" "kdaj" "kdo" "ker" "kje" "kljub"
+                    "kmalu" "ko" "koliko" "konec" "kot" "lahko" "lep" "malo"
+                    "manj" "močno" "mogoče" "mu" "nad" "naj" "največ" "nam"
+                    "namreč" "naprej" "nas" "naš" "nazaj" "nekaj" "nič" "nihče"
+                    "nikoli" "niso" "niti" "nov" "očitno" "od" "okoli" "oziroma"
+                    "pa" "pač" "po" "počasi" "pod" "poleg" "potem" "pozdrav"
+                    "prav" "pred" "predvsem" "prej" "pri" "prosim" "proti"
+                    "prvi" "ravno" "res" "saj" "sam" "še" "sedaj" "šele" "sem"
+                    "seveda" "sicer" "skoraj" "skupaj" "smo" "spet" "sploh"
+                    "ste" "število" "štiri" "stran" "svoj" "tako" "takoj"
+                    "takrat" "tega" "teh" "tem" "težko" "tisoč" "tisto" "tokrat"
+                    "toliko" "torej" "treba" "tudi" "tukaj" "več" "vedno"
+                    "veliko" "velja" "vendar" "vsaj" "vsak" "vse" "vsi" "za"
+                    "zadnji" "zakaj" "zakon" "zaradi" "zato" "zdaj" "že" "zelo"
+                    "zgolj")
     ;; Don't use: "bil" "bo" "bom" "do" "ena" "ga" "glede" "kar" "let"
     ;;  "pet" "pol" "primer" "so" "sta" "sto" "ta" "tam"
-    (adict-add-word hash 7 "az" "èn" "ti" "ök" "csak" "hogy"
-       "nem" "igen" "és" "így" "úgy" "s" "jól" "van" "nincs" "nekem" "neki"
-       "amely" "ki" "ezek" "azok" "ezen" "azon" "közé"
-       "még" "azaz" "aki" "egyéb" "vagy" "ennek" "annak" "talán")
+    (adict-add-word hash 7 "az" "èn" "ti" "ök" "csak" "hogy" "nem" "igen" "és"
+                    "így" "úgy" "s" "jól" "van" "nincs" "nekem" "neki" "amely"
+                    "ki" "ezek" "azok" "ezen" "azon" "közé" "még" "azaz" "aki"
+                    "egyéb" "vagy" "ennek" "annak" "talán")
     ;; "ö" "fel" "meg"  "volt"
-    (adict-add-word hash 8 "ea" "noi" "voi"
-       "să" "în" "peste" "şi" "despre" "cele" "dintre"
-       "avem" "vă" "oricare" "acest" "fi" "pe" "care" "dacă" "cum"
-       "numai" "fost" "când" "aţi" "pentru" "acum" "acesta"
-       "ca" "sub" "ani")
+    (adict-add-word hash 8 "ea" "noi" "voi" "să" "în" "peste" "şi" "despre"
+                    "cele" "dintre" "avem" "vă" "oricare" "acest" "fi" "pe"
+                    "care" "dacă" "cum" "numai" "fost" "când" "aţi" "pentru"
+                    "acum" "acesta" "ca" "sub" "ani")
     ;; Don't use:
-    ;;  "nu" "ei" "se" "mai" "te" "sunt" "am"  "la" "unless" "din" 
+    ;;  "nu" "ei" "se" "mai" "te" "sunt" "am"  "la" "unless" "din"
     (adict-add-word hash 9
-      ;; from http://home.unilang.org/main/wiki2/index.php/Portuguese_wordlist
-       "e" "são" "em" "têm" "mas" "querido" "querida" "caro" "cara" "para"
-       "obter" "pegar" "oi" "aquilo" "coisa" "meu" "não" "pôr"
-       "colocar" "acerca" "algum" "alguns" "alguma" "algumas" "lá" "além"
-       "nós" "eles" "ela" "elas" "teu" "enquanto" "com" "contigo" "você" "vosso"
-       "sim" "olá" "tchau" "adeus" "bem-vindo" "obrigado" "obrigada" "já"
-       "também" "sempre" "bonito" "certamente" "claramente" "cedo"
-       "longe" "tarde" "provavelmente" "alto" "talvez" "muito" "perto"
-       "agora" "apenas" "possivelmente" "raramente" "ainda" "acolá" "hoje"
-       "amanhã" "improvável" "bem" "errado" "ontem")
-    ;; don't use because they're ambiguous:
+                    ;; http://home.unilang.org/main/wiki2/index.php
+                    ;; /Portuguese_wordlist
+                    "e" "são" "em" "têm" "mas" "querido" "querida" "caro" "cara"
+                    "para" "obter" "pegar" "oi" "aquilo" "coisa" "meu" "não"
+                    "pôr" "colocar" "acerca" "algum" "alguns" "alguma" "algumas"
+                    "lá" "além" "nós" "eles" "ela" "elas" "teu" "enquanto" "com"
+                    "contigo" "você" "vosso" "sim" "olá" "tchau" "adeus"
+                    "bem-vindo" "obrigado" "obrigada" "já" "também" "sempre"
+                    "bonito" "certamente" "claramente" "cedo" "longe" "tarde"
+                    "provavelmente" "alto" "talvez" "muito" "perto" "agora"
+                    "apenas" "possivelmente" "raramente" "ainda" "acolá" "hoje"
+                    "amanhã" "improvável" "bem" "errado" "ontem")
+    ;; Don't use because they're ambiguous:
     ;; a i des du bien en es les que se tu un va el le te mi be is az da este
     ;; or ce le o de den ha med na sido para soble eu ele nunca ter lugar
     ;; "meter"
-    ;; adding another language? email me to make it available to everyone!
     (adict-add-word hash 10
-       ;; Norwegian bokmål (nb)
-       ;; Look at comment above on Swedish.
-       ;;
-       ;; Based on:
-       ;; http://helmer.aksis.uib.no/nta/ord10000.txt
-       ;; (Some words are just opposed to words in the Swedish or
-       ;; Danish lists.)
-       "nei" "å" "femti" "seksti" "sytti" "åtti" "nitti" "vil"
-       "andre" "annet" "fra" "ble" "hadde" "henne" "hennes"
-       "etter" "bare" "nå" "dette" "være" "opp" "må" "selv" "denne"
-       "før" "vært" "slik" "gikk" "gang" "hele" "sammen"
-       "godt" "måtte" "hvordan" "sier" "fikk" "noen" "kanskje"
-       "meg" "avstand" "skip" "prest" "flagg" "nevnt" "halve"
-       "vegen" "nesten" "måte" "avskrekkende" "forekomme" "utmerket"
-       "arbeid" "arbeide" "arbeidet" "kjøre" "kjørte" "kjører" "lese"
-       "leser" "leste" "omtrent" "gjøre" "ifølge" "gjennom" "disse"
-       "fortsatt" "allerede" "viser" "gamle" "ønsker" "gjort"
-       "likevel" "aldri" "heller" "beste" "svært"
-       "dermed" "bør" "dagbladet" "aftenposten" "løpet" "samtidig"
-       "tillegg" "mennesker" "regjeringen" "selskapet"
-       "funnet" "tilbake" "møte" "vanskelig" "gråte" "kjedelig"
-       "uke" "viktig" "viktige" "siste" "derimot" "betyr" "utsagn"
-       "feil" "medarbeider" "spurt" "spørsmål" "erkjenner"
-       "bakgrunn" "slike" "drept" "skjedde" "akkurat"
-       "optelling" "unnskylte" "flertydighet" "kjennsgjerning" 
-       "etterpå" "redd" "språk" "språklig" "språklige"
-       "undersøke" "tekstene" "fått" "unnskyld"
-       "opptelling" "opptellingen" "sist" "innkjøp"
-       "kjøp" "avgrense" "avgrensede" "alminnelig" "alminnelige"
-       "henger" "likegyldig" "vesentlige" "vesentlig")
-       ;; Don't use:
-       ;;  "ham" "og" "i" "det" "på" "at" "ikke" "jeg"  "også" "bare"
-       ;;  "hvor"  "siden" "hun"
+                    ;; Norwegian bokmål (nb)
+                    ;; Look at comment above on Swedish.
+                    ;;
+                    ;; Based on:
+                    ;; http://helmer.aksis.uib.no/nta/ord10000.txt
+                    ;; (Some words are just opposed to words in the Swedish or
+                    ;; Danish lists.)
+                    "nei" "å" "femti" "seksti" "sytti" "åtti" "nitti" "vil"
+                    "andre" "annet" "fra" "ble" "hadde" "henne" "hennes"
+                    "etter" "bare" "nå" "dette" "være" "opp" "må" "selv" "denne"
+                    "før" "vært" "slik" "gikk" "gang" "hele" "sammen"
+                    "godt" "måtte" "hvordan" "sier" "fikk" "noen" "kanskje"
+                    "meg" "avstand" "skip" "prest" "flagg" "nevnt" "halve"
+                    "vegen" "nesten" "måte" "avskrekkende" "forekomme"
+                    "utmerket" "arbeid" "arbeide" "arbeidet" "kjøre" "kjørte"
+                    "kjører" "lese" "leser" "leste" "omtrent" "gjøre" "ifølge"
+                    "gjennom" "disse" "fortsatt" "allerede" "viser" "gamle"
+                    "ønsker" "gjort" "likevel" "aldri" "heller" "beste" "svært"
+                    "dermed" "bør" "dagbladet" "aftenposten" "løpet" "samtidig"
+                    "tillegg" "mennesker" "regjeringen" "selskapet"
+                    "funnet" "tilbake" "møte" "vanskelig" "gråte" "kjedelig"
+                    "uke" "viktig" "viktige" "siste" "derimot" "betyr" "utsagn"
+                    "feil" "medarbeider" "spurt" "spørsmål" "erkjenner"
+                    "bakgrunn" "slike" "drept" "skjedde" "akkurat"
+                    "optelling" "unnskylte" "flertydighet" "kjennsgjerning"
+                    "etterpå" "redd" "språk" "språklig" "språklige"
+                    "undersøke" "tekstene" "fått" "unnskyld"
+                    "opptelling" "opptellingen" "sist" "innkjøp"
+                    "kjøp" "avgrense" "avgrensede" "alminnelig" "alminnelige"
+                    "henger" "likegyldig" "vesentlige" "vesentlig")
+    ;; Don't use:
+    ;;  "ham" "og" "i" "det" "på" "at" "ikke" "jeg"  "også" "bare"
+    ;;  "hvor"  "siden" "hun"
     (adict-add-word hash 11
-       ;; Danish (dk)
-       ;; Look at comment above on Swedish.
-       ;;
-       ;; Based on:
-       ;; http://korpus.dsl.dk/e-resurser/frekvens150.php?lang=dk
-       ;; Can only use 1 word among the first 37! And so it goes...
-       ;;
-       ;; http://sskkii.gu.se/jens/publications/bfiles/B62.pdf
-       "noget" "af" "hvad" "havde" "nogen"
-       "ud" "lige" "måske" "mig" "lidt" "op" "ind" "gik" "mod"
-       "sagde" "bliver" "os" "gør" "siger" "andet" "cykle" "fælde"
-       "finde" "fløjte" "hænge" "kæde" "knække" "køre" "læse" "opholde"
-       "svejse" "tage" "tager" "træffe" "præst" "lit" "afstand" "skib"
-       "jer" "flag" "generet" "nævnt" "hellere" "børn" "børnene" "uden"
-       "vejen" "næsten" "derinde" "oven" "købet" "måde" "afskrækkende"
-       "udmærket" "ik" "arbejde" "dænske" "udgave" "nogle"
-       "mellem" "sit" "fået" "undskyld"
-       "tres" "firs" "fems" "halvtres" "halvfjers" "halvfems" "undskyldte"
-       "bagefter" "græde" "forkert" "træls" "bange" "uge" "sprog"
-       "vigtig" "vigtige" "undersøge" "teksterne" "tilbage"
-       "optælling" "optællingen" "hendes" "sidste" "sidst" "indkøb"
-       "køb" "niece" "afgrænse" "afgrænsede" "almindelig" "almindelige"
-       "hænger" "kit" "verber" "udsagn" "ligegyldigt" "derimod"
-       "almindeligt" "optræder" "fejl" "beder" "medarbejder" "spurgt"
-       "spørgsmål" "optræden" "erkender" "begået" "modtage" "flertydighed"
-       "streger" "kendsgerning" "læser" "læsere" "væsentlige" "væsentlig"
-       "ægte" "erkendelse" "udkom" "månedligt" "sproglige" "iagttagelse"
-       "iagttagelser" "udgivet" "oprigtigt" "sproglig" "efter")
-       ;; Don't use: 
-       ;;  "ham" "og" "i" "det" "på" "at" "ikke" "jeg"  "også" "bare"
-       ;;  "nej" "ham" "og" "i" "det" "på"  "blev" "sig" "hende"
-       ;;  "betyder" "aldrig" 
+                    ;; Danish (dk)
+                    ;; Look at comment above on Swedish.
+                    ;;
+                    ;; Based on:
+                    ;; http://korpus.dsl.dk/e-resurser/frekvens150.php?lang=dk
+                    ;; Can only use 1 word among the first 37! And so it goes...
+                    ;;
+                    ;; http://sskkii.gu.se/jens/publications/bfiles/B62.pdf
+                    "noget" "af" "hvad" "havde" "nogen" "ud" "lige" "måske"
+                    "mig" "lidt" "op" "ind" "gik" "mod" "sagde" "bliver" "os"
+                    "gør" "siger" "andet" "cykle" "fælde" "finde" "fløjte"
+                    "hænge" "kæde" "knække" "køre" "læse" "opholde" "svejse"
+                    "tage" "tager" "træffe" "præst" "lit" "afstand" "skib" "jer"
+                    "flag" "generet" "nævnt" "hellere" "børn" "børnene" "uden"
+                    "vejen" "næsten" "derinde" "oven" "købet" "måde"
+                    "afskrækkende" "udmærket" "ik" "arbejde" "dænske" "udgave"
+                    "nogle" "mellem" "sit" "fået" "undskyld" "tres" "firs"
+                    "fems" "halvtres" "halvfjers" "halvfems" "undskyldte"
+                    "bagefter" "græde" "forkert" "træls" "bange" "uge" "sprog"
+                    "vigtig" "vigtige" "undersøge" "teksterne" "tilbage"
+                    "optælling" "optællingen" "hendes" "sidste" "sidst" "indkøb"
+                    "køb" "niece" "afgrænse" "afgrænsede" "almindelig"
+                    "almindelige" "hænger" "kit" "verber" "udsagn" "ligegyldigt"
+                    "derimod" "almindeligt" "optræder" "fejl" "beder"
+                    "medarbejder" "spurgt" "spørgsmål" "optræden" "erkender"
+                    "begået" "modtage" "flertydighed" "streger" "kendsgerning"
+                    "læser" "læsere" "væsentlige" "væsentlig" "ægte"
+                    "erkendelse" "udkom" "månedligt" "sproglige" "iagttagelse"
+                    "iagttagelser" "udgivet" "oprigtigt" "sproglig" "efter")
+    ;; Don't use: ;;  "ham" "og" "i" "det" "på" "at" "ikke" "jeg"  "også" "bare"
+    ;;  "nej" "ham" "og" "i" "det" "på"  "blev" "sig" "hende"
+    ;;  "betyder" "aldrig"
     (adict-add-word hash 12
-       ;; Classical Greek (grc)    (Precomposed letters)
-       ;;
-       ;; Based on (only showing root forms):
-       ;; http://www.perseus.tufts.edu/hopper/vocablist
-       ;;
-       ;; Some Greek speaking person should remove words from here that
-       ;; overlap with modern Greek.
-       ;; (Got lazy, didn't complete the selected verbs... Feel free...)
-       ;;
-       ;; Need a grc dictionary? See:
-       ;; ftp://ftp.gnu.org/gnu/aspell/dict/0index.html
-       "ὁ" "ἡ" "τὸ" "τὸν" "τὴν" "τοῦ" "τῆς" "τῷ" "τῇ" "οἱ" "αἱ" "τὰ" "τοὺς"
-       "τὰς"  "τά" "τῶν" "τοῖς" "ταῖς" "ὦ" "ἕν" "ἕνα" "μιᾷ" "ἑνί" 
-       "ἐγώ" "ἐγώγε" "ἔγωγε" "σύ" "ἕ" "μέν" "οὖν" "τε" "καί" "καὶ"
-       "τίς" "τί" "τίνες" "τίνα" "τίνος" "τίνων" "τίνι" "τίσι" "τίσιν" "τίνας"
-       "ἐν" "ἐπί" "ἐπὶ" "εἰς" "πρός" "πρὸς" "ἐκ" "ἐξ" "μετὰ" "κατὰ"
-       "κατά" "δέ" "δὲ" "ὡς" "δεῖ" "ἄν" "ἀλλά" "ἀλλὰ" "ἄλλα" "ἀνά"
-       "ἀνὰ" "δέω" "ὅστις" "διὰ" "διά" "σοῦ" "ἐμοῦ"
-       "εἰμί" "εἶ" "ἐστί" "ἐστὶ" "ἐστίν" "ἐστὶν" "ἐσμέν" "ἐσμεν" "ἐστέ" "ἐστε"
-       "ἐστὲ" "εἰσί" "εἰσίν" "ἴσθι" "ἔσθε" "εἶναι" "ἔσομαι" "ἔσῃ" "ἔσει"
-       "ἔσται" "ἐσόμεθα" "ἔσεσθε" "ἔσονται" "ἦ" "ἦν" "ἦσθα" "ἦμεν" "ἦτε" "ἦσαν"
-       "ὤν" "οὖσα" "ὄν" "ὄντα" "οὖσαν" "ὄντος" "οὔσης" "ὄντι" "οὔσῃ" "ὄντων"
-       "οὖσι" "οὖσιν" "ὄντας" "οὖσαι" "οὔσας" "οὐσῶν" "οὔσαις"
-       "εἶμι" "εἰσι" "εἰσιν" "ἴμεν" "ἴτε" "ἴασι" "ἴασιν" "ἴθι" "ἰέναι"
-       "ἰών" "ἰοῦσα" "ἰόν" "ἰόντος" 
-       "ὅς" "ἥ" "ὅ" "ὅν" "ἥν" "οὗ" "ἧς" "ᾧ" "ᾗ" "οἵ" "αἵ" "ἅ" "οὕς" "ἅς"
-       "ὧν" "οἷς" "αἷς")
-       ;; Don't use:
-       ;;  "τινες" "τινα" "τινος" "τινων" "τινι" "τισι" "τισιν" "τινας"
-       ;;  "μετά"  "τούς" "τις" "τι" "τό" "τόν" "τήν" "τάς"
+                    ;; Classical Greek (grc)    (Precomposed letters)
+                    ;;
+                    ;; Based on (only showing root forms):
+                    ;; http://www.perseus.tufts.edu/hopper/vocablist
+                    ;;
+                    ;; Some Greek speaking person should remove words from here
+                    ;; that overlap with modern Greek.  (Got lazy, didn't
+                    ;; complete the selected verbs... Feel free...)
+                    ;;
+                    ;; Need a grc dictionary? See:
+                    ;; ftp://ftp.gnu.org/gnu/aspell/dict/0index.html
+                    "ὁ" "ἡ" "τὸ" "τὸν" "τὴν" "τοῦ" "τῆς" "τῷ" "τῇ" "οἱ" "αἱ"
+                    "τὰ" "τοὺς" "τὰς"  "τά" "τῶν" "τοῖς" "ταῖς" "ὦ" "ἕν" "ἕνα"
+                    "μιᾷ" "ἑνί" "ἐγώ" "ἐγώγε" "ἔγωγε" "σύ" "ἕ" "μέν" "οὖν" "τε"
+                    "καί" "καὶ" "τίς" "τί" "τίνες" "τίνα" "τίνος" "τίνων" "τίνι"
+                    "τίσι" "τίσιν" "τίνας" "ἐν" "ἐπί" "ἐπὶ" "εἰς" "πρός" "πρὸς"
+                    "ἐκ" "ἐξ" "μετὰ" "κατὰ" "κατά" "δέ" "δὲ" "ὡς" "δεῖ" "ἄν"
+                    "ἀλλά" "ἀλλὰ" "ἄλλα" "ἀνά" "ἀνὰ" "δέω" "ὅστις" "διὰ" "διά"
+                    "σοῦ" "ἐμοῦ" "εἰμί" "εἶ" "ἐστί" "ἐστὶ" "ἐστίν" "ἐστὶν"
+                    "ἐσμέν" "ἐσμεν" "ἐστέ" "ἐστε" "ἐστὲ" "εἰσί" "εἰσίν" "ἴσθι"
+                    "ἔσθε" "εἶναι" "ἔσομαι" "ἔσῃ" "ἔσει" "ἔσται" "ἐσόμεθα"
+                    "ἔσεσθε" "ἔσονται" "ἦ" "ἦν" "ἦσθα" "ἦμεν" "ἦτε" "ἦσαν" "ὤν"
+                    "οὖσα" "ὄν" "ὄντα" "οὖσαν" "ὄντος" "οὔσης" "ὄντι" "οὔσῃ"
+                    "ὄντων" "οὖσι" "οὖσιν" "ὄντας" "οὖσαι" "οὔσας" "οὐσῶν"
+                    "οὔσαις" "εἶμι" "εἰσι" "εἰσιν" "ἴμεν" "ἴτε" "ἴασι" "ἴασιν"
+                    "ἴθι" "ἰέναι" "ἰών" "ἰοῦσα" "ἰόν" "ἰόντος" "ὅς" "ἥ" "ὅ" "ὅν"
+                    "ἥν" "οὗ" "ἧς" "ᾧ" "ᾗ" "οἵ" "αἵ" "ἅ" "οὕς" "ἅς" "ὧν" "οἷς"
+                    "αἷς")
+    ;; Don't use:
+    ;;  "τινες" "τινα" "τινος" "τινων" "τινι" "τισι" "τισιν" "τινας"
+    ;;  "μετά"  "τούς" "τις" "τι" "τό" "τόν" "τήν" "τάς"
     (adict-add-word hash 13
-       ;; Modern Greek (el)
-       "έλληνας" "ελληνίδα" "ελληνικά" "ελληνικής" "ελλήνων" "έλληνες"
-       "καλημέρα" "εκείνος" "καλησπέρα" "αυτή" "κείνο" "εκείνο" "αυτό"
-       "αυτής" "αυτά" "ετούτο" "εκείνες" "εκείνη" "καληνύχτα" "και" "ή"
-       "αντίο" "γεια" "σας" "παρακαλώ" "έχει" "έχεις" "έχοντας" "έχουν"
-       "εδώ" "όλη" "έκτη" "ναι" "όχι" "εις" "υγείαν" "μας" "ίσως" "κι"
-       "νερό" "κρασί" "οι" "τα" "σε" "την" "στον" "για" "μη" "στους" "ό"
-       "τη" "της" "στο" "στη" "στις" "των" "ως" "το" "πιο" "είναι" "ένα"
-       "ότι" "ίσοι" "στην" "να" "τους" "μια" "έτσι" "ώστε")
-       ;; Don't use:
-       ;;  "σε" "νέας" "μου" "σου" "ο" "η" "κυρία" "κύριε" "μέσα" "που"
-       ;;  "χυμός" "με" "του"
+                    ;; Modern Greek (el)
+                    "έλληνας" "ελληνίδα" "ελληνικά" "ελληνικής" "ελλήνων"
+                    "έλληνες" "καλημέρα" "εκείνος" "καλησπέρα" "αυτή" "κείνο"
+                    "εκείνο" "αυτό" "αυτής" "αυτά" "ετούτο" "εκείνες" "εκείνη"
+                    "καληνύχτα" "και" "ή" "αντίο" "γεια" "σας" "παρακαλώ" "έχει"
+                    "έχεις" "έχοντας" "έχουν" "εδώ" "όλη" "έκτη" "ναι" "όχι"
+                    "εις" "υγείαν" "μας" "ίσως" "κι" "νερό" "κρασί" "οι" "τα"
+                    "σε" "την" "στον" "για" "μη" "στους" "ό" "τη" "της" "στο"
+                    "στη" "στις" "των" "ως" "το" "πιο" "είναι" "ένα" "ότι"
+                    "ίσοι" "στην" "να" "τους" "μια" "έτσι" "ώστε")
+    ;; Don't use:
+    ;;  "σε" "νέας" "μου" "σου" "ο" "η" "κυρία" "κύριε" "μέσα" "που"
+    ;;  "χυμός" "με" "του"
     (adict-add-word hash 14
-       ;; Hindi (hi)
-       ;; Based on (not authoritative, but looks reasonable):
-       ;; http://kirkkittell.com/language/hindi/common
-       "में" "है" "हैं" "नहीं" "लिए" "गया" "विशेष" "बड़ी" "अथवा" "गए" "गई"
-       "तथा" "अपने" "कुछ" "साथ" "होता" "था" "दिया" "हुए" "कोई" "रूप" "से" "सभी"
-       "मैं" "रहा" "हुआ" "बात" "कहा" "समय" "क्या" "अपनी" "होती" "प्रकार" "बहुत"
-       "तरह" "बाद" "फिर" "रहे" "द्वारा" "अधिक" "रही" "होने" "एवं" "हुई" "थे" "उनके"
-       "थी" "वाले" "चाहिए" "चाहिये" "दिन" "लेकिन" "काम" "हूँ" "होते" "इसके" "उन्हें"
-       "गये" "नाम" "कभी" "आदि" "लोग" "बार" "यहाँ" "दोनों" "उन्होंने" "कार्य" "पास"
-       "वहाँ" "भारत" "लिया" "प्राप्त" "उनकी" "लोगों" "गयी" "लगा" "अन्य" "होगा" "इसी"
-       "देश" "यदि" "वर्ष" "ऐसा" "विकास" "अपना" "ऐसे" "दूसरे" "हाथ" "भाषा" "मेरे"
-       "मैंने" "तुम" "बीच" "वाली" "बड़े" "प्रति" "व्यक्ति" "उनका" "लिये" "इसलिए" "तीन"
-       "इसका" "ऐसी")
-    (adict-add-word hash 15
-       ;; Norwegian nynorsk (nn)
-       ;; Look at comment above on Swedish.
-       ;;
-       ;; Based on (please change if you find a better list):
-       ;; http://www.raudebergskule.no/peiling/OveOrdNyn/Lese100ord/Oversikt.htm
-       ;; https://no.wiktionary.org/wiki/Wiktionary:Frekvenslister/Norsk
-       "sidan" "sjølv" "kva" "berre" "kvar" "kjem" "dykkar" "deira" "fekk"
-       "noko" "desse" "gong" "vere" "ikkje" "nokon" "eit" "mykje" "frå"
-       "bryggje" "dagar" "korleis" "kven" "inkje" "nokre" "leike" "kaffi"
-       "stova" "meir" "sjå" "såg" "dei" "helsar" "kvifor"
-       "garden" "dårleg" "bere" "gjere" "høyre" "blei"  "saum" "låg" "ho"
-       "tek" "spurde" "hundar" "herleg" "hausten" "heiter" "følgje" "gutar"
-       "såleis" "attmed" "gøyme" "ringjer" "trufast"
-       "kyrkja" "skunde" "hugse" "vaknar" "hugsa" "auge" "vore"
-       "seinare" "finst" "medan" "nytta" "kjend" "heile" "aust" "innbyggjarar"
-       "fødd" "dømes" "døydde" "særleg" "songen" "høgaste" "sokn" "kjende"
-       "vatn" "vanleg" "byrja" "inneheld" "artar" "einaste" "øyane" "høyrer"
-       "vanlegvis" "leiar" "nordlege" "kvarandre" "byrjinga" "søraust"
-       "oftast" "difor" "auka" "såkalla" "eigne" "strekkjer" "vestlege"
-       "talet" "hovudstaden" "nyttar" "innbyggjarane" "skil" "austsida"
-       "vitja" "noverande" "mogleg" "umogleg" "tilgjengelig" "brukast"
-       "heilage" "kjelder" "austlege" "vanskeleg"
-       "òg" "noreg" "gjekk" "budde" "utgjer" "vatnet"
-       "tidlegare" "namn" "kvart" "heilt" "framleis"
-       "hovudsakleg" "hennar" "særs" "munnar" "attende"
-       "gut" "gutane" "månadene" "skilnadene" "skilnader"
-       "skilnaden" "føtene" "søner" "sønene" "brør" "brørne" "menner"
-       "venen" "vener" "venene" "føremon" "meining" "meininga" "meiningar"
-       "hending" "hendinga" "øyra" "øyro" "døme" "vori" "skrivi" "lesi"
-       ;; Don't use:
-       ;; "ein" "sidan" "utan" "elles"
-       )
-       hash))
+                    ;; Hindi (hi)
+                    ;; Based on (not authoritative, but looks reasonable):
+                    ;; http://kirkkittell.com/language/hindi/common
+                    "में" "है" "हैं" "नहीं" "लिए" "गया" "विशेष" "बड़ी" "अथवा"
+                    "गए" "गई" "तथा" "अपने" "कुछ" "साथ" "होता" "था" "दिया" "हुए"
+                    "कोई" "रूप" "से" "सभी" "मैं" "रहा" "हुआ" "बात" "कहा" "समय"
+                    "क्या" "अपनी" "होती" "प्रकार" "बहुत" "तरह" "बाद" "फिर" "रहे"
+                    "द्वारा" "अधिक" "रही" "होने" "एवं" "हुई" "थे" "उनके" "थी"
+                    "वाले" "चाहिए" "चाहिये" "दिन" "लेकिन" "काम" "हूँ" "होते"
+                    "इसके" "उन्हें" "गये" "नाम" "कभी" "आदि" "लोग" "बार" "यहाँ"
+                    "दोनों" "उन्होंने" "कार्य" "पास" "वहाँ" "भारत" "लिया"
+                    "प्राप्त" "उनकी" "लोगों" "गयी" "लगा" "अन्य" "होगा" "इसी"
+                    "देश" "यदि" "वर्ष" "ऐसा" "विकास" "अपना" "ऐसे" "दूसरे" "हाथ"
+                    "भाषा" "मेरे" "मैंने" "तुम" "बीच" "वाली" "बड़े" "प्रति"
+                    "व्यक्ति" "उनका" "लिये" "इसलिए" "तीन" "इसका" "ऐसी")
+    (adict-add-word hash 15 ;; Norwegian nynorsk (nn)
+                    ;; Look at comment above on Swedish.
+                    ;;
+                    ;; Based on (please change if you find a better list):
+                    ;; http://www.raudebergskule.no/peiling/OveOrdNyn/Lese100ord
+                    ;; /Oversikt.htm
+                    ;; https://no.wiktionary.org/wiki/Wiktionary:Frekvenslister
+                    ;; /Norsk
+                    "sidan" "sjølv" "kva" "berre" "kvar" "kjem" "dykkar" "deira"
+                    "fekk" "noko" "desse" "gong" "vere" "ikkje" "nokon" "eit"
+                    "mykje" "frå" "bryggje" "dagar" "korleis" "kven" "inkje"
+                    "nokre" "leike" "kaffi" "stova" "meir" "sjå" "såg" "dei"
+                    "helsar" "kvifor" "garden" "dårleg" "bere" "gjere" "høyre"
+                    "blei"  "saum" "låg" "ho" "tek" "spurde" "hundar" "herleg"
+                    "hausten" "heiter" "følgje" "gutar" "såleis" "attmed"
+                    "gøyme" "ringjer" "trufast" "kyrkja" "skunde" "hugse"
+                    "vaknar" "hugsa" "auge" "vore" "seinare" "finst" "medan"
+                    "nytta" "kjend" "heile" "aust" "innbyggjarar" "fødd" "dømes"
+                    "døydde" "særleg" "songen" "høgaste" "sokn" "kjende" "vatn"
+                    "vanleg" "byrja" "inneheld" "artar" "einaste" "øyane"
+                    "høyrer" "vanlegvis" "leiar" "nordlege" "kvarandre"
+                    "byrjinga" "søraust" "oftast" "difor" "auka" "såkalla"
+                    "eigne" "strekkjer" "vestlege" "talet" "hovudstaden"
+                    "nyttar" "innbyggjarane" "skil" "austsida" "vitja"
+                    "noverande" "mogleg" "umogleg" "tilgjengelig" "brukast"
+                    "heilage" "kjelder" "austlege" "vanskeleg" "òg" "noreg"
+                    "gjekk" "budde" "utgjer" "vatnet" "tidlegare" "namn" "kvart"
+                    "heilt" "framleis" "hovudsakleg" "hennar" "særs" "munnar"
+                    "attende" "gut" "gutane" "månadene" "skilnadene" "skilnader"
+                    "skilnaden" "føtene" "søner" "sønene" "brør" "brørne"
+                    "menner" "venen" "vener" "venene" "føremon" "meining"
+                    "meininga" "meiningar" "hending" "hendinga" "øyra" "øyro"
+                    "døme" "vori" "skrivi" "lesi"
+                    ;; Don't use: ;; "ein" "sidan" "utan" "elles"
+                    )
+    ;; adding another language? email me to make it available to everyone!
+    hash))
 
 (defun adict-evaluate-word (word)
   "Determine language of WORD using ``adict-hash''."
@@ -619,8 +633,8 @@ If IDLE-ONLY is set, abort when an input event occurs."
     (adict-foreach-word
      (point-min) (point-max) 8
      (lambda (word)
-        ;; increase language count of WORD by one
-        (callf incf (elt counts (adict-evaluate-word word))))
+       ;; increase language count of WORD by one
+       (callf incf (elt counts (adict-evaluate-word word))))
      idle-only)
     counts))
 
@@ -678,7 +692,7 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
     (move-overlay overlay beg (point))))
 
 (defun adict-conditional-modification (overlay afterp beg end
-                                       &optional pre-length)
+                                               &optional pre-length)
   (when afterp
     (delete-overlay overlay)
     (unless (setq adict-conditional-overlay-list
@@ -697,7 +711,7 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
                                       ov))))))
 
 
-;;; Functions for 3rd Party Use ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;; Functions for 3rd Party Use ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun adict-guess-word-language (word)
   "Determine language of WORD using ``adict-hash''."
