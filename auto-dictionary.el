@@ -45,6 +45,7 @@
 ;;
 ;;; Change Log:
 ;;
+;;    `adict-dictionary-list' now has an easier to customize format.
 ;;    `adict-guess-dictionary' no longer changes the dictionary if aborted.
 ;;
 ;; 2013-03-26 (1.0.2)
@@ -105,22 +106,29 @@ This is called when `auto-dictionary-mode' changes its mind or
 
 (defun adict-guess-dictionary-name (names &optional list)
   "Return the element in NAMES found in `ispell-valid-dictionary-list'."
-  (if list
-      (or (car (member (car names) list))
-          (when (cdr names)
-            (adict-guess-dictionary-name (cdr names))))
-    (or (adict-guess-dictionary-name
-         names
-         (if (fboundp 'ispell-valid-dictionary-list)
-             (ispell-valid-dictionary-list)
-           (cdr (mapcar 'car ispell-dictionary-alist))))
-        (car names))))
+  (unless list
+    (setq list (ispell-valid-dictionary-list)))
+  (or (car (member (car names) list))
+      (when (cdr names)
+        (adict-guess-dictionary-name (cdr names) list))))
 
-(defvar adict-dictionary-list
+(defun adict--guess-dictionary-cons (names)
+  (cons (car names) (adict-guess-dictionary-name names)))
+
+(defconst adict-language-list
+  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt")
+  "The languages, in order, which `adict-hash' contains.")
+
+(defun adict--dictionary-alist-type ()
+  `(repeat (cons (choice . ,(mapcar (lambda (lang) `(const ,lang))
+                                    (cdr adict-language-list)))
+                 (choice (const :tag "Off" nil)
+                         (string :tag "Dictionary name")))))
+
+(defcustom adict-dictionary-list
   ;; we can't be sure of the actual dictionary names
-  (mapcar 'adict-guess-dictionary-name
-          '(nil
-            ("en" "english")
+  (mapcar 'adict--guess-dictionary-cons
+          '(("en" "english")
             ("de" "deutsch" "german")
             ("fr" "francais" "french")
             ("es" "español" "spanish")
@@ -130,10 +138,14 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("ro" "românâ" "româneşte" "romanian")
             ("pt" "português" "portuguese")))
   "The dictionaries `auto-dictionary-mode' uses.
-Change them if you'd like a different region for your
+Change the second part of each pair to specify a specific dictionary for
+that language. You can use this to specify a different region for your
 language (e.g. \"en_US\" or \"american\").  Setting it to nil prevents
-that language from being used.  The order must conform to the laguages
-specified in `adict-language-list'")
+that language from being used.
+
+Each pair's car corresponds to a value in `adict-language-list'"
+  :group 'auto-dictionary
+  :type (adict--dictionary-alist-type))
 
 (defvar adict-lighter nil)
 (make-variable-buffer-local 'adict-lighter)
@@ -177,8 +189,7 @@ Calls `ispell-change-dictionary' and runs `adict-change-dictionary-hook'.  If
 BUFFER is nil, the current buffer is used.  If IDLE-ONLY is set, abort
 when an input event occurs."
   (interactive)
-  (let ((lang (nth (adict-find-max (adict-evaluate-buffer idle-only))
-                   adict-dictionary-list)))
+  (let ((lang (adict--evaluate-buffer-find-dictionary idle-only)))
     (unless (and idle-only (input-pending-p))
       (when lang
         (setq adict-last-check (buffer-modified-tick))
@@ -254,23 +265,6 @@ If IDLE-ONLY is set, abort when an input event occurs."
         (setq beg (point))
         (when (<= (skip-syntax-forward "w") maxlength)
           (funcall function (buffer-substring-no-properties beg (point))))))))
-
-(defun adict-find-max (vector)
-  (let* ((index (- (length vector) 1))
-         (pos index)
-         (max (elt vector pos)))
-    (decf index)
-    (while (> index 0)
-      (let ((val (elt vector index)))
-        (when (>= val max)
-          (setq max val)
-          (setq pos index))
-        (decf index)))
-    pos))
-
-(defconst adict-language-list
-  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt")
-  "The languages, in order, which `adict-hash' contains.")
 
 (defmacro adict-add-word (hash lang &rest words)
   `(dolist (word '(,@words))
@@ -423,6 +417,33 @@ If IDLE-ONLY is set, abort when an input event occurs."
      idle-only)
     counts))
 
+(defun adict--evaluate-buffer-find-max-index (idle-only)
+  (let* ((vector (adict-evaluate-buffer idle-only))
+         (index (- (length vector) 1))
+         (pos index)
+         (max (elt vector pos)))
+    (decf index)
+    (while (> index 0)
+      (let ((val (elt vector index)))
+        (when (>= val max)
+          (setq max val)
+          (setq pos index))
+        (decf index)))
+    pos))
+
+(defun adict--evaluate-buffer-find-dictionary (idle-only)
+  (if (consp (car adict-dictionary-list))
+      ;; current format
+      (cdr (assoc (adict--evaluate-buffer-find-lang idle-only)
+                  adict-dictionary-list))
+    ;; old format (<= 1.0.2)
+    (nth (adict--evaluate-buffer-find-max-index idle-only)
+         adict-dictionary-list)))
+
+(defun adict--evaluate-buffer-find-lang (idle-only)
+  (nth (adict--evaluate-buffer-find-max-index idle-only)
+       adict-language-list))
+
 ;;; Conditional Insertion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar adict-conditional-overlay-list nil)
@@ -504,8 +525,7 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
 (defun adict-guess-buffer-language (&optional idle-only)
   "Guess the language of the current-buffer using the data in ``adict-hash''.
 If IDLE-ONLY is set, abort when an input event occurs."
-  (let ((lang (elt adict-language-list
-                   (adict-find-max (adict-evaluate-buffer idle-only)))))
+  (let ((lang (adict--evaluate-buffer-find-lang idle-only)))
     (unless (and idle-only (input-pending-p))
       lang)))
 
