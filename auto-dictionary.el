@@ -251,9 +251,11 @@ when an input event occurs."
 
 (defun adict-update-lighter ()
   (setq adict-lighter
-        (format " %s"
-                (substring (or ispell-local-dictionary ispell-dictionary "??")
-                           0 2))))
+        (format " %s" (adict--shorten-dict (or ispell-local-dictionary
+                                               ispell-dictionary "??")))))
+
+(defun adict--shorten-dict (dict)
+  (if (> (length dict) 3) (substring dict 0 2) dict))
 
 (defun adict-foreach-word (beg end maxlength function &optional idle-only)
   "Execute FUNCTION for every word between BEG and END of length <= MAXLENGTH.
