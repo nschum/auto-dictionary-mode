@@ -4,7 +4,7 @@
 ;; Copyright (C) 2006-2008, 2011, 2013 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 1.0.2
+;; Version: 1.1
 ;; Keywords: wp
 ;; URL: http://nschum.de/src/emacs/auto-dictionary/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
@@ -45,6 +45,7 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2013-06-26 (1.1)
 ;;    Support for nb, nn, dk, hi, el, and grc.  (thanks to Tore Ferner)
 ;;    `adict-dictionary-list' now has an easier to customize format.
 ;;    `adict-guess-dictionary' no longer changes the dictionary if aborted.
