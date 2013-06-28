@@ -46,7 +46,7 @@
 ;;; Change Log:
 ;;
 ;; 2013-06-26 (1.1)
-;;    Support for nb, nn, dk, hi, el, and grc.  (thanks to Tore Ferner)
+;;    Support for nb, nn, da, hi, el, and grc.  (thanks to Tore Ferner)
 ;;    `adict-dictionary-list' now has an easier to customize format.
 ;;    `adict-guess-dictionary' no longer changes the dictionary if aborted.
 ;;
@@ -118,7 +118,7 @@ This is called when `auto-dictionary-mode' changes its mind or
   (cons (car names) (adict-guess-dictionary-name names)))
 
 (defconst adict-language-list
-  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "dk" "grc" "el" "hi"
+  '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "da" "grc" "el" "hi"
         "nn")
   "The languages, in order, which `adict-hash' contains.")
 
@@ -141,7 +141,7 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("ro" "românâ" "româneşte" "romanian")
             ("pt" "português" "portuguese")
             ("nb" "bokmål" "norwegian bokmål")
-            ("dk" "dansk" "danish")
+            ("da" "dansk" "danish")
             ("grc" "ἑλληνικά" "classical greek")
             ("el" "νέα ελληνικά" "modern greek")
             ("hi" "हिन्दी" "hindi")
@@ -491,7 +491,7 @@ If IDLE-ONLY is set, abort when an input event occurs."
     ;;  "ham" "og" "i" "det" "på" "at" "ikke" "jeg"  "også" "bare"
     ;;  "hvor"  "siden" "hun"
     (adict-add-word hash 11
-                    ;; Danish (dk)
+                    ;; Danish (da)
                     ;; Look at comment above on Swedish.
                     ;;
                     ;; Based on:
