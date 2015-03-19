@@ -45,6 +45,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Support for Catalan.  (thanks to Walter Garcia-Fontes)
+;;
 ;; 2013-06-26 (1.1)
 ;;    Support for nb, nn, da, hi, el, and grc.  (thanks to Tore Ferner)
 ;;    `adict-dictionary-list' now has an easier to customize format.
@@ -119,7 +121,7 @@ This is called when `auto-dictionary-mode' changes its mind or
 
 (defconst adict-language-list
   '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "da" "grc" "el" "hi"
-        "nn")
+        "nn" "ca")
   "The languages, in order, which `adict-hash' contains.")
 
 (defun adict--dictionary-alist-type ()
@@ -145,7 +147,8 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("grc" "ἑλληνικά" "classical greek")
             ("el" "νέα ελληνικά" "modern greek")
             ("hi" "हिन्दी" "hindi")
-            ("nn" "nynorsk" "norwegian nynorsk")))
+            ("nn" "nynorsk" "norwegian nynorsk")
+            ("ca" "catalan")))
   "The dictionaries `auto-dictionary-mode' uses.
 Change the second part of each pair to specify a specific dictionary for
 that language. You can use this to specify a different region for your
@@ -620,6 +623,29 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     "døme" "vori" "skrivi" "lesi"
                     ;; Don't use: ;; "ein" "sidan" "utan" "elles"
                     )
+    (adict-add-word hash 16 "més" "ara" "algú" "alguns" "abans" "benvolgut"
+                    "així" "any" "anys" "bo" "quasi" "cas" "senyor" "benvolguda"
+                    "com" "amb" "contra" "coses" "crec" "quan" "diem" "dir"
+                    "sisplau" "dieu" "des" "després" "diuen" "dius" "dic" "dir"
+                    "on" "dia" "dies" "exemple" "ells" "llavors" "digues" "dic"
+                    "direm" "aquesta" "aquest" "això" "està" "estava" "estat"
+                    "aquestes" "aquests" "estigui" "estan" "forma" "ser"
+                    "general" "gent" "govern" "gran" "havia" "fa" "fem" "fan"
+                    "fer" "fas" "cap" "benvolguda" "feu" "faig" "fan" "fins"
+                    "fet" "home" "avui" "les"  "benvolguts" "els" "doncs"
+                    "millor" "menys" "mentre" "mateix" "envia" "moment" "molt"
+                    "dóna" "món" "més" "mí" "res" "ens" "felicitacions"
+                    "nosaltres" "altra" "altres" "altre" "altres" "sembla"
+                    "reunió" "reunions" "actes" "acte" "extern" "externs"
+                    "externes" "part" "país" "però" "persones" "poc" "poder"
+                    "política" "perquè" "pot" "poden" "què" "sigui" "segons"
+                    "ser" "escrivint" "escrit" "sempre" "sinó" "sou" "som" "soc"
+                    "seu" "seus" "escriure" "escric" "sols" "també" "tant"
+                    "tenim" "tenir" "tinc" "tindre" "enhorabona" "teniu" "tenia"
+                    "temps" "té" "tenen" "tens" "temps" "tota" "totes" "tot"
+                    "tots" "treball" "tres" "una" "un" "uns" "vostè" "anem"
+                    "signat" "vegada" "veieu" "veuen" "veig" "veure" "ves" "ja"
+                    "jo")
     ;; adding another language? email me to make it available to everyone!
     hash))
 
