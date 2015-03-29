@@ -650,17 +650,20 @@ If IDLE-ONLY is set, abort when an input event occurs."
     (adict-add-word hash 17
                     ;; Esperanto (eo)
                     ;;
-                    ;; Frequent words, that are most probably unique to Esperanto
-                    "kaj" "ĉu" "ĉi" "aŭ" "ankaŭ" "ankaŭ" "baldaŭ" "antaŭ" "antaŭa"
-                    "ĝis" "eĉ" "ĉe" "eble" "ankoraŭ" "ajn" "preskaŭ" "pri" "ke"
-                    "pliaj" "pliajn" "morgaŭ" "morgaŭa" "hieraŭ" "hieraŭa" "ĉar"
+                    ;; Frequent words, that are most probably unique to
+                    ;; Esperanto
+                    "kaj" "ĉu" "ĉi" "aŭ" "ankaŭ" "ankaŭ" "baldaŭ" "antaŭ"
+                    "antaŭa" "ĝis" "eĉ" "ĉe" "eble" "ankoraŭ" "ajn" "preskaŭ"
+                    "pri" "ke" "pliaj" "pliajn" "morgaŭ" "morgaŭa" "hieraŭ"
+                    "hieraŭa" "ĉar"
                     ;;
                     ;; Very frequent words, that are probably not quite unique
                     "havi" "havas" "havis" "havos" "havus"
                     "esti" "estas" "estis" "estos" "estus"
                     "povi" "povas" "povis" "povos" "povus"
                     ;;
-                    ;; Fairly frequent words, that are most probably unique to Esperanto
+                    ;; Fairly frequent words, that are most probably unique to
+                    ;; Esperanto
                     "kiaj" "kiajn" "tiaj" "tiajn" "iaj" "iajn"
                     "miaj" "miajn" "viaj" "viajn" "liaj" "liajn"
                     "ŝi" "ŝin" "ŝia" "ŝian" "ŝiajn" "siaj" "siajn"
