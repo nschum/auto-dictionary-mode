@@ -653,7 +653,7 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     ;; Frequent words, that are most probably unique to Esperanto
                     "kaj" "ĉu" "ĉi" "aŭ" "ankaŭ" "ankaŭ" "baldaŭ" "antaŭ" "antaŭa"
                     "ĝis" "eĉ" "ĉe" "eble" "ankoraŭ" "ajn" "preskaŭ" "pri" "ke"
-                    "pliaj" "pliajn" "morgaŭ" "morgaŭa" "hieraŭ" "hieraŭa"
+                    "pliaj" "pliajn" "morgaŭ" "morgaŭa" "hieraŭ" "hieraŭa" "ĉar"
                     ;;
                     ;; Very frequent words, that are probably not quite unique
                     "havi" "havas" "havis" "havos" "havus"
