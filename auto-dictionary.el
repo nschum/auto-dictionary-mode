@@ -121,7 +121,7 @@ This is called when `auto-dictionary-mode' changes its mind or
 
 (defconst adict-language-list
   '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "da" "grc" "el" "hi"
-        "nn" "ca")
+        "nn" "ca" "eo")
   "The languages, in order, which `adict-hash' contains.")
 
 (defun adict--dictionary-alist-type ()
@@ -148,7 +148,8 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("el" "νέα ελληνικά" "modern greek")
             ("hi" "हिन्दी" "hindi")
             ("nn" "nynorsk" "norwegian nynorsk")
-            ("ca" "catalan")))
+            ("ca" "catalan")
+            ("eo" "esperanto")))
   "The dictionaries `auto-dictionary-mode' uses.
 Change the second part of each pair to specify a specific dictionary for
 that language. You can use this to specify a different region for your
@@ -646,6 +647,27 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     "tots" "treball" "tres" "una" "un" "uns" "vostè" "anem"
                     "signat" "vegada" "veieu" "veuen" "veig" "veure" "ves" "ja"
                     "jo")
+    (adict-add-word hash 17
+                    ;; Esperanto (eo)
+                    ;;
+                    ;; Frequent words, that are most probably unique to Esperanto
+                    "kaj" "ĉu" "ĉi" "aŭ" "ankaŭ" "ankaŭ" "baldaŭ" "antaŭ" "antaŭa"
+                    "ĝis" "eĉ" "ĉe" "eble" "ankoraŭ" "ajn" "preskaŭ" "pri" "ke"
+                    "pliaj" "pliajn" "morgaŭ" "morgaŭa" "hieraŭ" "hieraŭa"
+                    ;;
+                    ;; Very frequent words, that are probably not quite unique
+                    "havi" "havas" "havis" "havos" "havus"
+                    "esti" "estas" "estis" "estos" "estus"
+                    "povi" "povas" "povis" "povos" "povus"
+                    ;;
+                    ;; Fairly frequent words, that are most probably unique to Esperanto
+                    "kiaj" "kiajn" "tiaj" "tiajn" "iaj" "iajn"
+                    "miaj" "miajn" "viaj" "viajn" "liaj" "liajn"
+                    "ŝi" "ŝin" "ŝia" "ŝian" "ŝiajn" "siaj" "siajn"
+                    "ĝi" "ĝin" "ĝia" "ĝian" "ĝiaj" "ĝiajn" "niaj" "niajn"
+                    "iliaj" "iliajn" "ĉiu" "kiu" "ĉiun" "kiun" "tiun"
+                    "ĉiuj" "kiuj" "tiujn" "ĉiujn" "kiujn" "ĉio" "ĉion"
+                    "aliaj" "aliajn" "ĉiam" "ĉie")
     ;; adding another language? email me to make it available to everyone!
     hash))
 
