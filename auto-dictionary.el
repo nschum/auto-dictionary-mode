@@ -670,6 +670,7 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     "ĝi" "ĝin" "ĝia" "ĝian" "ĝiaj" "ĝiajn" "niaj" "niajn"
                     "iliaj" "iliajn" "ĉiu" "kiu" "ĉiun" "kiun" "tiun"
                     "ĉiuj" "kiuj" "tiujn" "ĉiujn" "kiujn" "ĉio" "ĉion"
+                    "nenio" "nenion" "neniu" "neniuj" "neniun" "neniujn"
                     "aliaj" "aliajn" "ĉiam" "ĉie")
     ;; adding another language? email me to make it available to everyone!
     hash))
