@@ -696,7 +696,8 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     "bol" "bola" "bolo" "boli"
                     "budem" "budeš" "bude" "budeme" "budete" "budú"
                     "nejaký" "nejaká" "nejaké" "aký" "aká" "aké"
-                    "nijaký" "nijaká" "nijaké")
+                    "nijaký" "nijaká" "nijaké"
+                    "v" "z" "k")
     ;; adding another language? email me to make it available to everyone!
     hash))
 
