@@ -121,7 +121,7 @@ This is called when `auto-dictionary-mode' changes its mind or
 
 (defconst adict-language-list
   '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "da" "grc" "el" "hi"
-        "nn" "ca")
+        "nn" "ca" "sk")
   "The languages, in order, which `adict-hash' contains.")
 
 (defun adict--dictionary-alist-type ()
@@ -148,7 +148,8 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("el" "νέα ελληνικά" "modern greek")
             ("hi" "हिन्दी" "hindi")
             ("nn" "nynorsk" "norwegian nynorsk")
-            ("ca" "catalan")))
+            ("ca" "catalan")
+            ("sk" "slovenčina" "slovak")))
   "The dictionaries `auto-dictionary-mode' uses.
 Change the second part of each pair to specify a specific dictionary for
 that language. You can use this to specify a different region for your
@@ -646,6 +647,28 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     "tots" "treball" "tres" "una" "un" "uns" "vostè" "anem"
                     "signat" "vegada" "veieu" "veuen" "veig" "veure" "ves" "ja"
                     "jo")
+    (adict-add-word hash 17
+                    ;; slovak (sk)
+                    ;;
+                    "alebo" "aj"
+                    "človek" "rok" "čas" "deň" "svet" "ruka" "voda" "žena"
+                    "celý" "veľký" "malý" "nový" "starý" "dobrý"
+                    "celá" "veľká" "malá" "nová" "stará" "dobrá"
+                    "celé" "veľké" "malé" "nové" "staré" "dobré"
+                    "ty" "my" "vy" "ony"
+                    "byť" "sme" "ste" "sú"
+                    "mať" "mám" "máš" "má" "máme" "máte" "majú"
+                    "môcť" "môžem" "môžeš" "môže" "môžeme" "môžete" "môžu"
+                    "musieť" "musím" "musíš" "musí" "musíme" "musíte" "musía"
+                    "chcieť" "chcem" "chceš" "chce" "chceme" "chcete" "chcú"
+                    "prísť" "prídem" "prídeš" "príde"
+                    "prídeme" "prídete" "prídu"
+                    "vidieť" "vidím" "vidíš" "vidí" "vidíme" "vidíte" "vidia"
+                    "bývať" "bývam" "bývaš" "býva" "bývame" "bývate" "bývajú"
+                    "bol" "bola" "bolo" "boli"
+                    "budem" "budeš" "bude" "budeme" "budete" "budú"
+                    "nejaký" "nejaká" "nejaké" "aký" "aká" "aké"
+                    "nijaký" "nijaká" "nijaké")
     ;; adding another language? email me to make it available to everyone!
     hash))
 
