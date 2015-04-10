@@ -45,6 +45,7 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Support Esperanto and Slovak.  (thanks to Johannes Mueller)
 ;;    Support for Catalan.  (thanks to Walter Garcia-Fontes)
 ;;
 ;; 2013-06-26 (1.1)
