@@ -45,6 +45,7 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Support Esperanto and Slovak.  (thanks to Johannes Mueller)
 ;;    Support for Catalan.  (thanks to Walter Garcia-Fontes)
 ;;
 ;; 2013-06-26 (1.1)
@@ -121,7 +122,7 @@ This is called when `auto-dictionary-mode' changes its mind or
 
 (defconst adict-language-list
   '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "da" "grc" "el" "hi"
-        "nn" "ca")
+        "nn" "ca" "eo" "sk")
   "The languages, in order, which `adict-hash' contains.")
 
 (defun adict--dictionary-alist-type ()
@@ -148,7 +149,9 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("el" "νέα ελληνικά" "modern greek")
             ("hi" "हिन्दी" "hindi")
             ("nn" "nynorsk" "norwegian nynorsk")
-            ("ca" "catalan")))
+            ("ca" "catalan")
+            ("eo" "esperanto")
+	    ("sk" "slovenčina" "slovak")))
   "The dictionaries `auto-dictionary-mode' uses.
 Change the second part of each pair to specify a specific dictionary for
 that language. You can use this to specify a different region for your
@@ -646,6 +649,56 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     "tots" "treball" "tres" "una" "un" "uns" "vostè" "anem"
                     "signat" "vegada" "veieu" "veuen" "veig" "veure" "ves" "ja"
                     "jo")
+    (adict-add-word hash 17
+                    ;; Esperanto (eo)
+                    ;;
+                    ;; Frequent words, that are most probably unique to
+                    ;; Esperanto
+                    "kaj" "ĉu" "ĉi" "aŭ" "ankaŭ" "ankaŭa" "baldaŭ"
+                    "antaŭ" "antaŭa" "antaŭaj" "antaŭe" "antaŭen"
+                    "malantaŭ" "malantaŭa" "malantaŭaj" "malantaŭe"
+                    "malantaŭen" "ĝis" "eĉ" "ĉe" "eble" "ankoraŭ" "ajn"
+                    "preskaŭ" "pri" "ke" "pliaj" "pliajn" "morgaŭ" "morgaŭa"
+                    "hieraŭ" "hieraŭa" "ĉar"
+                    ;;
+                    ;; Very frequent words, that are probably not quite unique
+                    "havi" "havas" "havis" "havos" "havus"
+                    "esti" "estas" "estis" "estos" "estus"
+                    "povi" "povas" "povis" "povos" "povus"
+                    ;;
+                    ;; Fairly frequent words, that are most probably unique to
+                    ;; Esperanto
+                    "kiaj" "kiajn" "tiaj" "tiajn" "iaj" "iajn"
+                    "miaj" "miajn" "viaj" "viajn" "liaj" "liajn"
+                    "ŝi" "ŝin" "ŝia" "ŝian" "ŝiajn" "siaj" "siajn"
+                    "ĝi" "ĝin" "ĝia" "ĝian" "ĝiaj" "ĝiajn" "niaj" "niajn"
+                    "iliaj" "iliajn" "ĉiu" "kiu" "ĉiun" "kiun" "tiun"
+                    "ĉiuj" "kiuj" "tiujn" "ĉiujn" "kiujn" "ĉio" "ĉion"
+                    "nenio" "nenion" "neniu" "neniuj" "neniun" "neniujn"
+                    "aliaj" "aliajn" "ĉiam" "ĉie")
+    (adict-add-word hash 18
+                    ;; slovak (sk)
+                    ;;
+                    "alebo" "aj"
+                    "človek" "rok" "čas" "deň" "svet" "ruka" "voda" "žena"
+                    "celý" "veľký" "malý" "nový" "starý" "dobrý"
+                    "celá" "veľká" "malá" "nová" "stará" "dobrá"
+                    "celé" "veľké" "malé" "nové" "staré" "dobré"
+                    "ty" "my" "vy" "ony"
+                    "byť" "sme" "ste" "sú"
+                    "mať" "mám" "máš" "má" "máme" "máte" "majú"
+                    "môcť" "môžem" "môžeš" "môže" "môžeme" "môžete" "môžu"
+                    "musieť" "musím" "musíš" "musí" "musíme" "musíte" "musía"
+                    "chcieť" "chcem" "chceš" "chce" "chceme" "chcete" "chcú"
+                    "prísť" "prídem" "prídeš" "príde"
+                    "prídeme" "prídete" "prídu"
+                    "vidieť" "vidím" "vidíš" "vidí" "vidíme" "vidíte" "vidia"
+                    "bývať" "bývam" "bývaš" "býva" "bývame" "bývate" "bývajú"
+                    "bol" "bola" "bolo" "boli"
+                    "budem" "budeš" "bude" "budeme" "budete" "budú"
+                    "nejaký" "nejaká" "nejaké" "aký" "aká" "aké"
+                    "nijaký" "nijaká" "nijaké"
+                    "v" "z" "k")
     ;; adding another language? email me to make it available to everyone!
     hash))
 
