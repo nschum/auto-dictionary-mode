@@ -122,7 +122,7 @@ This is called when `auto-dictionary-mode' changes its mind or
 
 (defconst adict-language-list
   '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "da" "grc" "el" "hi"
-        "nn" "ca" "eo" "sk")
+        "nn" "ca" "eo" "sk" "pl")
   "The languages, in order, which `adict-hash' contains.")
 
 (defun adict--dictionary-alist-type ()
@@ -151,7 +151,8 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("nn" "nynorsk" "norwegian nynorsk")
             ("ca" "catalan")
             ("eo" "esperanto")
-	    ("sk" "slovenčina" "slovak")))
+	    ("sk" "slovenčina" "slovak")
+            ("pl" "polski" "polish")))
   "The dictionaries `auto-dictionary-mode' uses.
 Change the second part of each pair to specify a specific dictionary for
 that language. You can use this to specify a different region for your
@@ -699,6 +700,32 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     "nejaký" "nejaká" "nejaké" "aký" "aká" "aké"
                     "nijaký" "nijaká" "nijaké"
                     "v" "z" "k")
+    (adict-add-word hash 19
+                    ;; polish (pl)
+                    ;;
+                    "oraz" "dlaczego" "napis" "lecz" "ale" "także" "tymczasem"
+                    "cześć" "witaj" "pozdrawiam" "napisał" "napisała" "witam"
+                    "dzień" "dobry" "jak" "zaraz" "niech" "sprawa" "sprawie"
+                    "niemal" "że" "tym" "ona" "ono" "oni" "tak" "nie" "raz"
+                    "jeden" "dwa" "trzy" "cztery" "pięć" "sześć" "siedem"
+                    "osiem" "dziewięć" "dziesięć" "mam" "ma" "mają" "pod"
+                    "nad" "być" "jest" "będzie" "natychmiast" "zaraz" "zwrot"
+                    "dlatego" "jeszcze" "początek" "koniec" "był" "poniedziałek"
+                    "wtorek" "środa" "czwartek" "piątek" "sobota" "niedziela"
+                    "tydzień" "rok" "roczek" "lata" "latka" "łata" "korekta"
+                    "błąd" "pomyłka" "błędy" "urlop" "wakacje" "lato" "wiek"
+                    "nauka" "szkoła" "uczelnia" "wykład" "książka" "tekst"
+                    "rozpocząć" "wyjazd" "przejazd" "gdyby" "jeśli" "babcia"
+                    "wąsy" "zawsze" "nigdy" "przekaz" "przelew" "wykonaj"
+                    "przygoda" "opowiedz" "daj" "dawaj" "dał" "dała" "nigdy"
+                    "miasto" "wieś" "znać" "znak" "platforma" "prawo" "lewo"
+                    "góra" "dół" "doły" "doła" "niepokój" "złodziej"
+                    "pomyłka" "omyłkowo" "zmyśli" "myśli" "fantazjuje"
+                    "ledwo" "dyszy" "jakie" "takie" "teraz" "zaraz"
+                    "chce" "zjawisko" "nabierze" "skali" "większej"
+                    "miesiąc" "miesięcznie" "rocznie" "wiadomość" "wiadomości"
+                    "obsługa" "obsługi" "pisał" "pisała" "pisać" "myślę" "myśl"
+                    "przełączy" "połączy" "pismo" "powinno" "język")
     ;; adding another language? email me to make it available to everyone!
     hash))
 
