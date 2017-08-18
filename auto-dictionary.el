@@ -122,7 +122,7 @@ This is called when `auto-dictionary-mode' changes its mind or
 
 (defconst adict-language-list
   '(nil "en" "de" "fr" "es" "sv" "sl" "hu" "ro" "pt" "nb" "da" "grc" "el" "hi"
-        "nn" "ca" "eo" "sk")
+        "nn" "ca" "eo" "sk" "nl")
   "The languages, in order, which `adict-hash' contains.")
 
 (defun adict--dictionary-alist-type ()
@@ -151,7 +151,8 @@ This is called when `auto-dictionary-mode' changes its mind or
             ("nn" "nynorsk" "norwegian nynorsk")
             ("ca" "catalan")
             ("eo" "esperanto")
-	    ("sk" "slovenčina" "slovak")))
+            ("sk" "slovenčina" "slovak")
+            ("nl" "nederlands" "dutch")))
   "The dictionaries `auto-dictionary-mode' uses.
 Change the second part of each pair to specify a specific dictionary for
 that language. You can use this to specify a different region for your
@@ -699,6 +700,22 @@ If IDLE-ONLY is set, abort when an input event occurs."
                     "nejaký" "nejaká" "nejaké" "aký" "aká" "aké"
                     "nijaký" "nijaká" "nijaké"
                     "v" "z" "k")
+    (adict-add-word hash 19
+                    ;; dutch (nl)
+                    ;; from:
+                    ;; http://www.101languages.net/
+                    ;; dutch/most-common-dutch-words/
+                    ;; with added common greetings
+                    "het" "dat" "een" "niet" "wat" "ze" "te" "hij" "zijn" "er"
+                    "maar" "die" "heb" "voor" "met" "ben" "mijn" "dit" "aan"
+                    "hier" "om" "naar" "jij" "weet" "kan" "geen" "zo" "wil"
+                    "wel" "moet" "goed" "hem" "hebben" "nee" "heeft" "waar" "nu"
+                    "hoe" "ga" "kom" "uit" "gaan" "bent" "haar" "doen" "ook"
+                    "mij" "over" "daar" "zou" "jullie" "bij" "ons" "zal" "gaat"
+                    "hebt" "meer" "waarom" "iets" "laat" "deze" "doe" "jou"
+                    "moeten" "alles" "denk" "kunnen" "eens" "echt" "weg" "door"
+                    "toch" "zien" "alleen" "nou" "hoi" "hallo" "groet"
+                    "groeten" "groetjes" )
     ;; adding another language? email me to make it available to everyone!
     hash))
 
