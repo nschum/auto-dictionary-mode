@@ -1,5 +1,5 @@
 ;;; auto-dictionary.el --- automatic dictionary switcher for flyspell
-;;-*-coding: utf-8;-*-
+;;-*- coding: utf-8; lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2006-2008, 2011, 2013 Nikolaj Schumacher
 ;;
