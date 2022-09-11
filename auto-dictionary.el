@@ -857,7 +857,8 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
         (results nil)
         (old-rank-raw nil)
         (word-list-filter
-         (remove-if-not (lambda (word) (string-match "^\\w+$" word)) word-list))
+         (remove-if-not (lambda (word) (string-match "^\\w+$" word))
+                        (delete-dups word-list)))
         (words (seq-take word-list-filter 200) ))
     (setq valid-dicts (seq-filter
                        (lambda (d) (not (member d adict-ignored-dictionaries-ispell)))
