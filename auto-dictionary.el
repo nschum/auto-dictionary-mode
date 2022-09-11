@@ -752,7 +752,7 @@ If IDLE-ONLY is set, abort when an input event occurs."
 (defun adict--evaluate-buffer-find-dictionary (idle-only)
   (cond
    ((equal adict-operation-mode 'ispell)
-    (adict-evaluate-words-ispell-paragraph idle-only))
+    (adict-evaluate-words-ispell-chunk idle-only))
    ((equal adict-operation-mode 'legacy)
     (if (consp (car adict-dictionary-list))
         ;; current format
@@ -762,12 +762,15 @@ If IDLE-ONLY is set, abort when an input event occurs."
       (nth (adict--evaluate-buffer-find-max-index idle-only)
            adict-dictionary-list))) ))
 
-(defun adict-evaluate-words-ispell-paragraph (idle-only)
+(defun adict-evaluate-words-ispell-chunk (idle-only)
   (let ((begin nil)
         (end nil))
     (save-excursion
-      (setq begin (progn (backward-paragraph) (point))
-            end (progn (forward-paragraph) (point))) )
+      (dotimes (cnt 100) (backward-word) )
+      (setq begin (point)))
+    (save-excursion
+      (dotimes (cnt 100) (forward-word) )
+      (setq end (point)))
     (adict-evaluate-words-ispell
      (split-string (buffer-substring-no-properties begin end)) idle-only)) )
 
@@ -856,10 +859,9 @@ You can use this, for instance, to localize the \" writes\" text in Gnus:
         (adict-dictionaries-stats-not-checked nil)
         (results nil)
         (old-rank-raw nil)
-        (word-list-filter
+        (words
          (remove-if-not (lambda (word) (string-match "^\\w+$" word))
-                        (delete-dups word-list)))
-        (words (seq-take word-list-filter 200) ))
+                        (delete-dups word-list))) )
     (setq valid-dicts (seq-filter
                        (lambda (d) (not (member d adict-ignored-dictionaries-ispell)))
                        adict-dictionary-list-ispell))
